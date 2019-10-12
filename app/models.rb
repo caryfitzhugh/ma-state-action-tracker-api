@@ -11,6 +11,10 @@ require 'app/models/exec_office'
 require 'app/models/funding_source'
 require 'app/models/lead_agency'
 require 'app/models/partner'
+require 'app/models/primary_climate_interaction'
+require 'app/models/shmcap_goal'
+
+require 'app/models/action_track'
 
 DataMapper.finalize
 

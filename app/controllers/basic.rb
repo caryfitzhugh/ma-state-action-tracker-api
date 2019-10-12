@@ -39,18 +39,18 @@ module Controllers
     #     id: {type: Integer, description: "ID"}
     #   }
     # }
-    type 'ActionTrackShmcapGoal', {
-      properties: {
-        name: {type: String, description: "Name of the goal"},
-        id: {type: Integer, description: "ID"}
-      }
-    }
-    type 'ActionTrackPrimaryClimateInteraction', {
-      properties: {
-        name: {type: String, description: "Name of the interaction"},
-        id: {type: Integer, description: "ID"}
-      }
-    }
+    # type 'ActionTrackShmcapGoal', {
+    #   properties: {
+    #     name: {type: String, description: "Name of the goal"},
+    #     id: {type: Integer, description: "ID"}
+    #   }
+    # }
+    # type 'ActionTrackPrimaryClimateInteraction', {
+    #   properties: {
+    #     name: {type: String, description: "Name of the interaction"},
+    #     id: {type: Integer, description: "ID"}
+    #   }
+    # }
 
     type 'ActionTrack', {
       properties: {

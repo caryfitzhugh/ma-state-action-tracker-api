@@ -10,13 +10,18 @@ require 'colorize'
 require 'sinatra/cross_origin'
 require 'sinatra/swagger-exposer/swagger-exposer'
 
+
+require 'app/controllers/agency_priorities_controller'
 require 'app/controllers/exec_offices_controller'
+require 'app/controllers/funding_sources_controller'
 require 'app/controllers/lead_agencies_controller'
 require 'app/controllers/partners_controller'
-require 'app/controllers/agency_priorities_controller'
-require 'app/controllers/funding_sources_controller'
-
+require 'app/controllers/primary_climate_interactions_controller'
+require 'app/controllers/shmcap_goals_controller'
 require 'app/controllers/users_controller'
+
+# Needs to be *last*
+require 'app/controllers/action_tracks_controller'
 
 require 'app/helpers'
 
@@ -59,11 +64,14 @@ class App < Sinatra::Application
   )
   helpers Helpers::Authentication
 
+  use Controllers::ActionTracksController
   use Controllers::AgencyPrioritiesController
   use Controllers::ExecOfficesController
   use Controllers::FundingSourcesController
   use Controllers::LeadAgenciesController
   use Controllers::PartnersController
+  use Controllers::PrimaryClimateInteractionsController
+  use Controllers::ShmcapGoalsController
   use Controllers::UsersController
 
   get "/", :no_swagger => true do
