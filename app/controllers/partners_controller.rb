@@ -27,6 +27,7 @@ module Controllers
 
     # GET_LIST
     endpoint description: "Get List of Partner records",
+      tags: ["Partner"],
       responses: standard_errors( 200 => "PartnerIndexResponse"),
       parameters: {
         page: ["Page Start", :query, false, Integer, {
@@ -51,6 +52,7 @@ module Controllers
     # GET_ONE
     # GET_MANY
     endpoint description: "Get Partner record",
+      tags: ["Partner"],
       responses: standard_errors( 200 => "PartnerResponse"),
       parameters: {
         ids: ["ID of Partner", :path, true, [Integer]]
@@ -64,6 +66,7 @@ module Controllers
 
     # CREATE
     endpoint description: "Create Partner",
+      tags: ["Partner"],
       responses: standard_errors( 200 => "PartnerResponse"),
       parameters: {
         name: ["Partner name", :body, true, String],
@@ -76,6 +79,7 @@ module Controllers
 
     # UPDATE
     endpoint description: "Update Partner record",
+      tags: ["Partner"],
       responses: standard_errors( 200 => "PartnerResponse"),
       parameters: {
         id: ["ID of Partner", :path, true, Integer],
@@ -87,6 +91,7 @@ module Controllers
 
     # UPDATE_MANY
     endpoint description: "Update Many Partner records",
+      tags: ["Partner"],
       responses: standard_errors( 200 => "PartnerResponse"),
       parameters: {
         ids: ["ID of Partner", :body, true, [Integer]],
@@ -98,6 +103,7 @@ module Controllers
 
     # DELETE
     endpoint description: "Delete Partner record",
+      tags: ["Partner"],
       responses: standard_errors( 200 => "PartnerResponse"),
       parameters: {
         id: ["ID of Partner", :path, true, Integer]
@@ -108,6 +114,7 @@ module Controllers
 
     # DELETE_MANY
     endpoint description: "Delete MANY Partner records",
+      tags: ["Partner"],
       responses: standard_errors( 200 => "PartnerResponse"),
       parameters: {
         ids: ["ID of Partner", :query, true, [Integer]]
@@ -115,6 +122,5 @@ module Controllers
     delete "/partners/?", require_role: :curator do
         raise "NOT IMPLEMENTED"
     end
-
   end
 end

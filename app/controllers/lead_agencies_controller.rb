@@ -43,7 +43,8 @@ module Controllers
         sort_by_field: ["Field to sort on", :query, false, String],
         sort_by_order: ["Field sort direction (ASC/DESC)", :query, false, String],
         filter: ["Filter to sort on {field_name: value}", :query, false, String],
-      }
+      },
+      tags: ["Lead Agency"]
     get "/lead-agencies/?" do
         raise "NOT IMPLEMENTED"
     end
@@ -54,7 +55,8 @@ module Controllers
       responses: standard_errors( 200 => "LeadAgencyResponse"),
       parameters: {
         ids: ["ID of LeadAgency", :path, true, [Integer]]
-      }
+      },
+      tags: ["Lead Agency"]
     get "/lead-agencies/:ids" do
       data = (params["ids"].split(",")).map(&:to_i).map do |id|
         LeadAgency.get!(id)
@@ -68,7 +70,8 @@ module Controllers
       parameters: {
         name: ["LeadAgency name", :body, true, String],
         href: ["LeadAgency href", :body, true, String],
-      }
+      },
+      tags: ["Lead Agency"]
 
     post "/lead-agencies/?", require_role: :curator do
       raise "NOT IMPLEMENTED"
@@ -80,7 +83,8 @@ module Controllers
       parameters: {
         id: ["ID of LeadAgency", :path, true, Integer],
         data: ["Data of LeadAgency", :body, true, "LeadAgency"]
-      }
+      },
+      tags: ["Lead Agency"]
     put "/lead-agencies/:id/?", require_role: :curator do
         raise "NOT IMPLEMENTED"
     end
@@ -91,7 +95,8 @@ module Controllers
       parameters: {
         ids: ["ID of LeadAgency", :body, true, [Integer]],
         data: ["Data of LeadAgency", :body, true, "LeadAgency"]
-      }
+      },
+      tags: ["Lead Agency"]
     put "/lead-agencies/?", require_role: :curator do
         raise "NOT IMPLEMENTED"
     end
@@ -101,7 +106,8 @@ module Controllers
       responses: standard_errors( 200 => "LeadAgencyResponse"),
       parameters: {
         id: ["ID of LeadAgency", :path, true, Integer]
-      }
+      },
+      tags: ["Lead Agency"]
     delete "/lead-agencies/:id/?", require_role: :curator do
         raise "NOT IMPLEMENTED"
     end
@@ -111,7 +117,8 @@ module Controllers
       responses: standard_errors( 200 => "LeadAgencyResponse"),
       parameters: {
         ids: ["ID of LeadAgency", :query, true, [Integer]]
-      }
+      },
+      tags: ["Lead Agency"]
     delete "/lead-agencies/?", require_role: :curator do
         raise "NOT IMPLEMENTED"
     end

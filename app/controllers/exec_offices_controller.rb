@@ -43,7 +43,8 @@ module Controllers
         sort_by_field: ["Field to sort on", :query, false, String],
         sort_by_order: ["Field sort direction (ASC/DESC)", :query, false, String],
         filter: ["Filter to sort on {field_name: value}", :query, false, String],
-      }
+      },
+      tags: ["Exec Office"]
     get "/exec-offices/?" do
         raise "NOT IMPLEMENTED"
     end
@@ -54,7 +55,8 @@ module Controllers
       responses: standard_errors( 200 => "ExecOfficeResponse"),
       parameters: {
         ids: ["ID of ExecOffice", :path, true, [Integer]]
-      }
+      },
+      tags: ["Exec Office"]
     get "/exec-offices/:ids" do
       data = (params["ids"].split(",")).map(&:to_i).map do |id|
         ExecOffice.get!(id)
@@ -68,7 +70,8 @@ module Controllers
       parameters: {
         name: ["ExecOffice name", :body, true, String],
         href: ["ExecOffice href", :body, true, String],
-      }
+      },
+      tags: ["Exec Office"]
 
     post "/exec-offices/?", require_role: :curator do
       raise "NOT IMPLEMENTED"
@@ -80,7 +83,8 @@ module Controllers
       parameters: {
         id: ["ID of ExecOffice", :path, true, Integer],
         data: ["Data of ExecOffice", :body, true, "ExecOffice"]
-      }
+      },
+      tags: ["Exec Office"]
     put "/exec-offices/:id/?", require_role: :curator do
         raise "NOT IMPLEMENTED"
     end
@@ -91,7 +95,8 @@ module Controllers
       parameters: {
         ids: ["ID of ExecOffice", :body, true, [Integer]],
         data: ["Data of ExecOffice", :body, true, "ExecOffice"]
-      }
+      },
+      tags: ["Exec Office"]
     put "/exec-offices/?", require_role: :curator do
         raise "NOT IMPLEMENTED"
     end
@@ -101,7 +106,8 @@ module Controllers
       responses: standard_errors( 200 => "ExecOfficeResponse"),
       parameters: {
         id: ["ID of ExecOffice", :path, true, Integer]
-      }
+      },
+      tags: ["Exec Office"]
     delete "/exec-offices/:id/?", require_role: :curator do
         raise "NOT IMPLEMENTED"
     end
@@ -111,7 +117,8 @@ module Controllers
       responses: standard_errors( 200 => "ExecOfficeResponse"),
       parameters: {
         ids: ["ID of ExecOffice", :query, true, [Integer]]
-      }
+      },
+      tags: ["Exec Office"]
     delete "/exec-offices/?", require_role: :curator do
         raise "NOT IMPLEMENTED"
     end

@@ -43,7 +43,8 @@ module Controllers
         sort_by_field: ["Field to sort on", :query, false, String],
         sort_by_order: ["Field sort direction (ASC/DESC)", :query, false, String],
         filter: ["Filter to sort on {field_name: value}", :query, false, String],
-      }
+      },
+      tags: ["Agency Priority"]
     get "/agency-priorities/?" do
         raise "NOT IMPLEMENTED"
     end
@@ -54,7 +55,8 @@ module Controllers
       responses: standard_errors( 200 => "AgencyPriorityResponse"),
       parameters: {
         ids: ["ID of AgencyPriority", :path, true, [Integer]]
-      }
+      },
+      tags: ["Agency Priority"]
     get "/agency-priorities/:ids" do
       data = (params["ids"].split(",")).map(&:to_i).map do |id|
         AgencyPriority.get!(id)
@@ -68,7 +70,8 @@ module Controllers
       parameters: {
         name: ["AgencyPriority name", :body, true, String],
         href: ["AgencyPriority href", :body, true, String],
-      }
+      },
+      tags: ["Agency Priority"]
 
     post "/agency-priorities/?", require_role: :curator do
       raise "NOT IMPLEMENTED"
@@ -80,7 +83,8 @@ module Controllers
       parameters: {
         id: ["ID of AgencyPriority", :path, true, Integer],
         data: ["Data of AgencyPriority", :body, true, "AgencyPriority"]
-      }
+      },
+      tags: ["Agency Priority"]
     put "/agency-priorities/:id/?", require_role: :curator do
         raise "NOT IMPLEMENTED"
     end
@@ -91,7 +95,8 @@ module Controllers
       parameters: {
         ids: ["ID of AgencyPriority", :body, true, [Integer]],
         data: ["Data of AgencyPriority", :body, true, "AgencyPriority"]
-      }
+      },
+      tags: ["Agency Priority"]
     put "/agency-priorities/?", require_role: :curator do
         raise "NOT IMPLEMENTED"
     end
@@ -101,7 +106,8 @@ module Controllers
       responses: standard_errors( 200 => "AgencyPriorityResponse"),
       parameters: {
         id: ["ID of AgencyPriority", :path, true, Integer]
-      }
+      },
+      tags: ["Agency Priority"]
     delete "/agency-priorities/:id/?", require_role: :curator do
         raise "NOT IMPLEMENTED"
     end
@@ -111,10 +117,10 @@ module Controllers
       responses: standard_errors( 200 => "AgencyPriorityResponse"),
       parameters: {
         ids: ["ID of AgencyPriority", :query, true, [Integer]]
-      }
+      },
+      tags: ["Agency Priority"]
     delete "/agency-priorities/?", require_role: :curator do
         raise "NOT IMPLEMENTED"
     end
-
   end
 end
