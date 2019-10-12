@@ -7,7 +7,6 @@ module Controllers
     type 'AgencyPriority', {
       properties: {
         name: {type: String, description: "Name of the priority"},
-        href: {type: String, description: "Href of the priority"},
         id: {type: Integer, description: "ID"}
       }
     }
@@ -69,7 +68,6 @@ module Controllers
       responses: standard_errors( 200 => "AgencyPriorityResponse"),
       parameters: {
         name: ["AgencyPriority name", :body, true, String],
-        href: ["AgencyPriority href", :body, true, String],
       },
       tags: ["Agency Priority"]
 

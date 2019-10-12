@@ -14,6 +14,8 @@ require 'app/controllers/exec_offices_controller'
 require 'app/controllers/lead_agencies_controller'
 require 'app/controllers/partners_controller'
 require 'app/controllers/agency_priorities_controller'
+require 'app/controllers/funding_sources_controller'
+
 require 'app/controllers/users_controller'
 
 require 'app/helpers'
@@ -57,7 +59,11 @@ class App < Sinatra::Application
   )
   helpers Helpers::Authentication
 
+  use Controllers::AgencyPrioritiesController
   use Controllers::ExecOfficesController
+  use Controllers::FundingSourcesController
+  use Controllers::LeadAgenciesController
+  use Controllers::PartnersController
   use Controllers::UsersController
 
   get "/", :no_swagger => true do

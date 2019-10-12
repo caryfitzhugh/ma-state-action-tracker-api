@@ -32,13 +32,13 @@ module Controllers
     #     id: {type: Integer, description: "ID"}
     #   }
     # }
-    type 'ActionTrackFundingSource', {
-      properties: {
-        name: {type: String, description: "Name of the funding source"},
-        href: {type: String, description: "Href of the funding source"},
-        id: {type: Integer, description: "ID"}
-      }
-    }
+    # type 'ActionTrackFundingSource', {
+    #   properties: {
+    #     name: {type: String, description: "Name of the funding source"},
+    #     href: {type: String, description: "Href of the funding source"},
+    #     id: {type: Integer, description: "ID"}
+    #   }
+    # }
     type 'ActionTrackShmcapGoal', {
       properties: {
         name: {type: String, description: "Name of the goal"},

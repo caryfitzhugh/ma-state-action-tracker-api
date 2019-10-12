@@ -6,7 +6,9 @@ require 'dm-timestamps'
 
 require 'lib/config'
 
+require 'app/models/agency_priority'
 require 'app/models/exec_office'
+require 'app/models/funding_source'
 require 'app/models/lead_agency'
 require 'app/models/partner'
 
