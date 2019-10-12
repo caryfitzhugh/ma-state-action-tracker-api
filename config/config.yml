@@ -1,0 +1,28 @@
+production:
+  postgres:
+     adapter: postgres
+     database: <%= ENV['RDS_DB_NAME'] %>
+     username: <%= ENV['RDS_USERNAME'] %>
+     password: <%= ENV['RDS_PASSWORD'] %>
+     host: <%= ENV['RDS_HOSTNAME'] %>
+     port: <%= ENV['RDS_PORT'] %>
+
+development:
+  postgres:
+    adapter: <%= ENV['POSTGRES_DB_ADAPTER'] || 'postgres' %>
+    database: <%= ENV['POSTGRES_DB_DATABASE'] || 'mastateat' %>
+    username: <%= ENV['POSTGRES_DB_USERNAME'] || 'mastateat' %>
+    password: <%= ENV['POSTGRES_DB_PASSWORD'] || 'mastateat' %>
+    host: <%= ENV['POSTGRES_DB_HOST'] || 'localhost' %>
+    port: <%= ENV['POSTGRES_DB_PORT'] || '5000' %>
+  pretend_admin: true
+
+test:
+  postgres:
+    adapter: <%= ENV['POSTGRES_DB_ADAPTER'] || 'postgres' %>
+    database: <%= ENV['POSTGRES_DB_DATABASE'] || 'mastateat' %>
+    username: <%= ENV['POSTGRES_DB_USERNAME'] || 'mastateat' %>
+    password: <%= ENV['POSTGRES_DB_PASSWORD'] || 'mastateat' %>
+    host: <%= ENV['POSTGRES_DB_HOST'] || 'localhost' %>
+    port: <%= ENV['POSTGRES_DB_PORT'] || '5000' %>
+  pretend_admin: false
