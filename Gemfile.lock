@@ -865,6 +865,9 @@ GEM
       dm-core (~> 1.2.0)
     dm-migrations (1.2.0)
       dm-core (~> 1.2.0)
+    dm-pager (1.1.0)
+      dm-aggregates (>= 0.10.1)
+      dm-core (>= 0.10.1)
     dm-postgres-adapter (1.2.0)
       dm-do-adapter (~> 1.2.0)
       do_postgres (~> 0.10.6)
@@ -925,6 +928,7 @@ GEM
       domain_name (~> 0.5)
     i18n (1.7.0)
       concurrent-ruby (~> 1.0)
+    irb (1.0.0)
     jmespath (1.4.0)
     jschematic (0.1.0)
       addressable
@@ -1151,14 +1155,17 @@ DEPENDENCIES
   database_cleaner
   dm-chunked_query
   dm-migrations
+  dm-pager
   dm-postgis!
   dm-postgres-adapter
   dm-postgres-types
+  dm-serializer
   dm-transactions
   eventmachine (= 1.2.3)
   factory_girl
   georuby
   inquirer!
+  irb
   linkeddata
   mechanize
   mocha

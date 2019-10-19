@@ -8,11 +8,13 @@ gem 'data_mapper'
 gem 'dm-postgres-adapter'
 gem 'dm-transactions'
 gem 'dm-chunked_query'
+gem 'dm-serializer'
 gem 'sinatra-swagger-exposer', :git => 'https://github.com/caryfitzhugh/sinatra-swagger-exposer.git', :ref => "a3d196b"
 gem 'bcrypt'
 gem 'dm-postgres-types'
 gem 'dm-postgis', :git => 'https://github.com/skaufhold/dm-postgis.git'
 gem 'dm-migrations'
+gem 'dm-pager'
 gem 'georuby'
 gem 'rgeo'
 gem 'inquirer', :git => "https://github.com/brbrady/inquirer.rb.git", :ref => "master"
@@ -30,6 +32,7 @@ group :development do
   gem 'pry-byebug'
   gem 'factory_girl'
   gem 'mechanize'
+  gem 'irb'
 end
 
 group :test do

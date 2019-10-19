@@ -12,9 +12,22 @@ module Controllers
       }
     }
 
-    type 'ExecOfficeResponse', {
+    type 'ExecOfficeCreate', {
+      properties: {
+        name: {type: String, description: "Name of the office"},
+        href: {type: String, description: "Href of the office"},
+      }
+    }
+
+    type 'ExecOfficesResponse', {
       properties: {
         data: {type: ["ExecOffice"], description: "ExecOffice records"},
+      }
+    }
+
+    type 'ExecOfficeResponse', {
+      properties: {
+        data: {type: "ExecOffice", description: "ExecOffice records"},
       }
     }
 
@@ -42,11 +55,28 @@ module Controllers
               }],
         sort_by_field: ["Field to sort on", :query, false, String],
         sort_by_order: ["Field sort direction (ASC/DESC)", :query, false, String],
-        filter: ["Filter to sort on {field_name: value}", :query, false, String],
+        filter: ["Filter to sort on query string format (field=value&field2=value)", :query, false, String],
       },
       tags: ["Exec Office"]
     get "/exec-offices/?" do
-        raise "NOT IMPLEMENTED"
+      objs = ExecOffice
+      require 'pry'
+      binding.pry
+      (params["filter"] || "").split("&").each do |fv|
+        field, value = fv.split("=", 2)
+        objs = objs.all(field => value)
+      end
+
+      order = (params["sort_by_field"] || "name").to_sym
+      if params["sort_by_order"] == "desc"
+          order = [order.desc]
+      elsif params["sort_by_order"] == "asc"
+          order = [order.asc]
+      end
+      objs = objs.all(:order => order).page(params["page"], :per_page => params["per_page"])
+      json(data: objs,
+           total: objs.count
+          )
     end
 
     # GET_ONE
@@ -68,13 +98,15 @@ module Controllers
     endpoint description: "Create Exec Offic",
       responses: standard_errors( 200 => "ExecOfficeResponse"),
       parameters: {
-        name: ["ExecOffice name", :body, true, String],
-        href: ["ExecOffice href", :body, true, String],
+        name: ["ExecOffice name", :query, true, String],
+        href: ["ExecOffice href link", :query, false, String],
       },
       tags: ["Exec Office"]
 
     post "/exec-offices/?", require_role: :curator do
-      raise "NOT IMPLEMENTED"
+      eo = ExecOffice.create(slice('name', 'href'))
+      puts(eo.to_json)
+      json(data: eo)
     end
 
     # UPDATE
@@ -86,19 +118,26 @@ module Controllers
       },
       tags: ["Exec Office"]
     put "/exec-offices/:id/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      eo = ExecOffice.get!(params["id"])
+      eo.update!(params[:data].slice(:name, :href))
+      return json(data: eo)
     end
 
     # UPDATE_MANY
     endpoint description: "Update Many Exec Office records",
-      responses: standard_errors( 200 => "ExecOfficeResponse"),
+      responses: standard_errors( 200 => "ExecOfficesResponse"),
       parameters: {
         ids: ["ID of ExecOffice", :body, true, [Integer]],
         data: ["Data of ExecOffice", :body, true, "ExecOffice"]
       },
       tags: ["Exec Office"]
     put "/exec-offices/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      data = (params["ids"].split(",")).map(&:to_i).map do |id|
+        eo = ExecOffice.get!(id)
+        eo.update!(params[:data].slice(:name, :href))
+        eo
+      end
+      return json(data: data)
     end
 
     # DELETE
@@ -109,19 +148,25 @@ module Controllers
       },
       tags: ["Exec Office"]
     delete "/exec-offices/:id/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      eo = ExecOffice.get!(params["id"])
+      eo.destroy!
+      return json(data: eo)
     end
 
     # DELETE_MANY
     endpoint description: "Delete MANY Exec Office records",
-      responses: standard_errors( 200 => "ExecOfficeResponse"),
+      responses: standard_errors( 200 => "ExecOfficesResponse"),
       parameters: {
         ids: ["ID of ExecOffice", :query, true, [Integer]]
       },
       tags: ["Exec Office"]
     delete "/exec-offices/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      data = (params["ids"].split(",")).map(&:to_i).map do |id|
+        eo = ExecOffice.get!(id)
+        eo.destroy!
+        eo
+      end
+      return json(data: data)
     end
-
   end
 end

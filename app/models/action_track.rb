@@ -3,39 +3,39 @@ require 'dm-postgis'
 
 class ActionTrack
   include DataMapper::Resource
-  property :id, Serial
+  property :id, Serial, :key => true
 
   # Action title: unique name
   property :title, String, :unique => true
   # Action description: unique description
   property :description, String
   # Executive Office - drop down
-  has 1, :action_track_exec_office, ExecOffice
+  belongs_to :exec_office, ExecOffice
   # Lead Agency - drop down
-  has 1, :action_track_lead_agency, LeadAgency
+  belongs_to :lead_agency, LeadAgency
   # Partner(s) - unique fill ahead
-  has n, :action_track_partner, Partner
+  has n, :partner, Partner
   # Agency Priority Score - drop down
-  has 1, :action_track_agency_priority, AgencyPriority
+  belongs_to :agency_priority, AgencyPriority
   # Possible Funding Source(s) - unique - fill ahead
-  has n, :action_track_funding_source, FundingSource
+  has n, :funding_source, FundingSource
   # SHMCAP Goal(s) - drop down
-  has n, :action_track_shmcap_goal, ShmcapGoal
+  has n, :shmcap_goal, ShmcapGoal
   # Primary Climate Change Interactions - drop down
-  has n, :action_track_primary_climate_interaction, PrimaryClimateInteraction
+  has n, :primary_climate_interaction, PrimaryClimateInteraction
 
   # Completion Timeframe - unique - month/year -need start and end
   property :start_on, Date
   property :end_on, Date
 
   # Hazards - TBD
-  # has n, :action_track_hazard
+  # has n, :hazard
   # Sectors - TBD
-  # has n, :action_track_sector
+  # has n, :sector
   # Actions - TBD
-  # has n, :action_track_action
+  # has n, :action
   # Benefits - TBD
-  # has n, :action_track_benefit
+  # has n, :benefit
   validates_primitive_type_of :start_on, :end_on
 
   def self.search(

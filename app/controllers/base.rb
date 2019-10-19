@@ -5,7 +5,7 @@ require 'app/helpers'
 
 module ArraysInQueryValueProcessor
   def validate_value(value)
-    if value and not value.is_a? Array
+    if value and not value.is_a? Array and value.respond_to?(:split)
       value.split(",").collect {|i| @processor_for_values.validate_value(i) }
     else
       super(value)

@@ -3,6 +3,8 @@ require 'dm-postgres-types'
 require 'dm-postgis'
 require 'dm-chunked_query'
 require 'dm-timestamps'
+require 'dm-serializer'
+require 'dm-pager'
 
 require 'lib/config'
 
