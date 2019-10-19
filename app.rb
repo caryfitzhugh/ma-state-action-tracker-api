@@ -35,6 +35,7 @@ set :allow_methods, [:get, :put, :delete, :post, :options]
 set :allow_credentials, true
 set :max_age, "1728000"
 set :expose_headers, ['Content-Type']
+set :port, 5000
 
 class App < Sinatra::Application
   register Sinatra::SwaggerExposer

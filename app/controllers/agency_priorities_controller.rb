@@ -4,6 +4,8 @@ require 'uri'
 
 module Controllers
   class AgencyPrioritiesController < Controllers::Base
+    EDITABLE_FIELDS = ['name']
+
     type 'AgencyPriority', {
       properties: {
         name: {type: String, description: "Name of the priority"},
@@ -11,9 +13,15 @@ module Controllers
       }
     }
 
-    type 'AgencyPriorityResponse', {
+    type 'AgencyPrioritiesResponse', {
       properties: {
         data: {type: ["AgencyPriority"], description: "AgencyPriority records"},
+      }
+    }
+
+    type 'AgencyPriorityResponse', {
+      properties: {
+        data: {type: "AgencyPriority", description: "AgencyPriority records"},
       }
     }
 
@@ -45,7 +53,22 @@ module Controllers
       },
       tags: ["Agency Priority"]
     get "/agency-priorities/?" do
-        raise "NOT IMPLEMENTED"
+      objs = AgencyPriority
+      (params["filter"] || "").split("&").each do |fv|
+        field, value = fv.split("=", 2)
+        objs = objs.all(field => value)
+      end
+
+      order = (params["sort_by_field"] || "name").to_sym
+      if params["sort_by_order"] == "desc"
+          order = [order.desc]
+      elsif params["sort_by_order"] == "asc"
+          order = [order.asc]
+      end
+      objs = objs.all(:order => order).page(params["page"], :per_page => params["per_page"])
+      json(data: objs,
+           total: objs.count
+          )
     end
 
     # GET_ONE
@@ -72,7 +95,9 @@ module Controllers
       tags: ["Agency Priority"]
 
     post "/agency-priorities/?", require_role: :curator do
-      raise "NOT IMPLEMENTED"
+      ap = AgencyPriority.create(slice(*EDITABLE_FIELDS))
+      puts(ap.to_json)
+      json(data: ap)
     end
 
     # UPDATE
@@ -84,19 +109,26 @@ module Controllers
       },
       tags: ["Agency Priority"]
     put "/agency-priorities/:id/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      ap = AgencyPriority.get!(params["id"])
+      ap.update!(params[:data].slice(*EDITABLE_FIELDS))
+      return json(data: ap)
     end
 
     # UPDATE_MANY
     endpoint description: "Update Many Agency Priority records",
-      responses: standard_errors( 200 => "AgencyPriorityResponse"),
+      responses: standard_errors( 200 => "AgencyPrioritiesResponse"),
       parameters: {
         ids: ["ID of AgencyPriority", :body, true, [Integer]],
         data: ["Data of AgencyPriority", :body, true, "AgencyPriority"]
       },
       tags: ["Agency Priority"]
     put "/agency-priorities/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      data = (params["ids"].split(",")).map(&:to_i).map do |id|
+        ap = AgencyPriority.get!(id)
+        ap.update!(params[:data].slice(*EDITABLE_FIELDS))
+        ap
+      end
+      return json(data: data)
     end
 
     # DELETE
@@ -107,18 +139,25 @@ module Controllers
       },
       tags: ["Agency Priority"]
     delete "/agency-priorities/:id/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      ap = AgencyPriority.get!(params["id"])
+      ap.destroy!
+      return json(data: ap)
     end
 
     # DELETE_MANY
     endpoint description: "Delete MANY Agency Priority records",
-      responses: standard_errors( 200 => "AgencyPriorityResponse"),
+      responses: standard_errors( 200 => "AgencyPrioritiesResponse"),
       parameters: {
         ids: ["ID of AgencyPriority", :query, true, [Integer]]
       },
       tags: ["Agency Priority"]
     delete "/agency-priorities/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      data = (params["ids"].split(",")).map(&:to_i).map do |id|
+        ap = AgencyPriority.get!(id)
+        ap.destroy!
+        ap
+      end
+      return json(data: data)
     end
   end
 end

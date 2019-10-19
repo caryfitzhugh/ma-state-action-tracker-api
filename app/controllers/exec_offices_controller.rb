@@ -4,6 +4,7 @@ require 'uri'
 
 module Controllers
   class ExecOfficesController < Controllers::Base
+    EDITABLE_FIELDS = ["name", "href"]
     type 'ExecOffice', {
       properties: {
         name: {type: String, description: "Name of the office"},
@@ -60,8 +61,6 @@ module Controllers
       tags: ["Exec Office"]
     get "/exec-offices/?" do
       objs = ExecOffice
-      require 'pry'
-      binding.pry
       (params["filter"] || "").split("&").each do |fv|
         field, value = fv.split("=", 2)
         objs = objs.all(field => value)
@@ -104,7 +103,7 @@ module Controllers
       tags: ["Exec Office"]
 
     post "/exec-offices/?", require_role: :curator do
-      eo = ExecOffice.create(slice('name', 'href'))
+      eo = ExecOffice.create(slice(*EDITABLE_FIELDS))
       puts(eo.to_json)
       json(data: eo)
     end
@@ -119,7 +118,7 @@ module Controllers
       tags: ["Exec Office"]
     put "/exec-offices/:id/?", require_role: :curator do
       eo = ExecOffice.get!(params["id"])
-      eo.update!(params[:data].slice(:name, :href))
+      eo.update!(params[:data].slice(*EDITABLE_FIELDS))
       return json(data: eo)
     end
 
@@ -134,7 +133,7 @@ module Controllers
     put "/exec-offices/?", require_role: :curator do
       data = (params["ids"].split(",")).map(&:to_i).map do |id|
         eo = ExecOffice.get!(id)
-        eo.update!(params[:data].slice(:name, :href))
+        eo.update!(params[:data].slice(*EDITABLE_FIELDS))
         eo
       end
       return json(data: data)
