@@ -59,7 +59,7 @@ module Controllers
     # GET_ONE
     # GET_MANY
     endpoint description: "Get Funding Source record",
-      responses: standard_errors( 200 => "FundingSourceResponse"),
+      responses: standard_errors( 200 => "FundingSourcesResponse"),
       parameters: {
         ids: ["ID of FundingSource", :path, true, [Integer]]
       },

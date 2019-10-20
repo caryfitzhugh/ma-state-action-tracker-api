@@ -4,6 +4,7 @@ require 'uri'
 
 module Controllers
   class LeadAgenciesController < Controllers::Base
+    EDITABLE_FIELDS = ['name', 'href']
     type 'LeadAgency', {
       properties: {
         name: {type: String, description: "Name of the agency"},
@@ -13,6 +14,12 @@ module Controllers
     }
 
     type 'LeadAgencyResponse', {
+      properties: {
+        data: {type: "LeadAgency", description: "LeadAgency records"},
+      }
+    }
+
+    type 'LeadAgenciesResponse', {
       properties: {
         data: {type: ["LeadAgency"], description: "LeadAgency records"},
       }
@@ -46,22 +53,19 @@ module Controllers
       },
       tags: ["Lead Agency"]
     get "/lead-agencies/?" do
-        raise "NOT IMPLEMENTED"
+      self.get_list(LeadAgency, params)
     end
 
     # GET_ONE
     # GET_MANY
     endpoint description: "Get Lead Agency record",
-      responses: standard_errors( 200 => "LeadAgencyResponse"),
+      responses: standard_errors( 200 => "LeadAgenciesResponse"),
       parameters: {
         ids: ["ID of LeadAgency", :path, true, [Integer]]
       },
       tags: ["Lead Agency"]
     get "/lead-agencies/:ids" do
-      data = (params["ids"].split(",")).map(&:to_i).map do |id|
-        LeadAgency.get!(id)
-      end
-      return json(data: data)
+      self.get_one_or_many(LeadAgency, params)
     end
 
     # CREATE
@@ -74,7 +78,7 @@ module Controllers
       tags: ["Lead Agency"]
 
     post "/lead-agencies/?", require_role: :curator do
-      raise "NOT IMPLEMENTED"
+      self.create(LeadAgency, params)
     end
 
     # UPDATE
@@ -86,19 +90,19 @@ module Controllers
       },
       tags: ["Lead Agency"]
     put "/lead-agencies/:id/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      self.update_one(LeadAgency, params)
     end
 
     # UPDATE_MANY
     endpoint description: "Update Many Lead Agency records",
-      responses: standard_errors( 200 => "LeadAgencyResponse"),
+      responses: standard_errors( 200 => "LeadAgenciesResponse"),
       parameters: {
         ids: ["ID of LeadAgency", :body, true, [Integer]],
         data: ["Data of LeadAgency", :body, true, "LeadAgency"]
       },
       tags: ["Lead Agency"]
     put "/lead-agencies/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      self.update_many(LeadEgency, params)
     end
 
     # DELETE
@@ -109,19 +113,18 @@ module Controllers
       },
       tags: ["Lead Agency"]
     delete "/lead-agencies/:id/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      self.delete_record(LeadAgency, params)
     end
 
     # DELETE_MANY
     endpoint description: "Delete MANY Lead Agency records",
-      responses: standard_errors( 200 => "LeadAgencyResponse"),
+      responses: standard_errors( 200 => "LeadAgenciesResponse"),
       parameters: {
         ids: ["ID of LeadAgency", :query, true, [Integer]]
       },
       tags: ["Lead Agency"]
     delete "/lead-agencies/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      self.delete_many(LeadAgency, params)
     end
-
   end
 end

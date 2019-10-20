@@ -59,7 +59,7 @@ module Controllers
     # GET_ONE
     # GET_MANY
     endpoint description: "Get Agency Priority record",
-      responses: standard_errors( 200 => "AgencyPriorityResponse"),
+      responses: standard_errors( 200 => "AgencyPrioritiesResponse"),
       parameters: {
         ids: ["ID of AgencyPriority", :path, true, [Integer]]
       },

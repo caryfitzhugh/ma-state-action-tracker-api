@@ -66,7 +66,7 @@ module Controllers
     # GET_ONE
     # GET_MANY
     endpoint description: "Get Exec Office record",
-      responses: standard_errors( 200 => "ExecOfficeResponse"),
+      responses: standard_errors( 200 => "ExecOfficesResponse"),
       parameters: {
         ids: ["ID of ExecOffice", :path, true, [Integer]]
       },

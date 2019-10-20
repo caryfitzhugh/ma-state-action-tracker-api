@@ -4,6 +4,7 @@ require 'uri'
 
 module Controllers
   class PartnersController < Controllers::Base
+    EDITABLE_FIELDS = ['name', 'href']
     type 'Partner', {
       properties: {
         name: {type: String, description: "Name of the partner"},
@@ -12,9 +13,15 @@ module Controllers
       }
     }
 
-    type 'PartnerResponse', {
+    type 'PartnersResponse', {
       properties: {
         data: {type: ["Partner"], description: "Partner records"},
+      }
+    }
+
+    type 'PartnerResponse', {
+      properties: {
+        data: {type: "Partner", description: "Partner records"},
       }
     }
 
@@ -46,22 +53,19 @@ module Controllers
         filter: ["Filter to sort on {field_name: value}", :query, false, String],
       }
     get "/partners/?" do
-        raise "NOT IMPLEMENTED"
+      self.get_list(Partner, params)
     end
 
     # GET_ONE
     # GET_MANY
     endpoint description: "Get Partner record",
       tags: ["Partner"],
-      responses: standard_errors( 200 => "PartnerResponse"),
+      responses: standard_errors( 200 => "PartnersResponse"),
       parameters: {
         ids: ["ID of Partner", :path, true, [Integer]]
       }
     get "/partners/:ids" do
-      data = (params["ids"].split(",")).map(&:to_i).map do |id|
-        Partner.get!(id)
-      end
-      return json(data: data)
+      self.get_one_or_many(Partner, params)
     end
 
     # CREATE
@@ -74,7 +78,7 @@ module Controllers
       }
 
     post "/partners/?", require_role: :curator do
-      raise "NOT IMPLEMENTED"
+      self.create(Partner, params)
     end
 
     # UPDATE
@@ -86,19 +90,19 @@ module Controllers
         data: ["Data of Partner", :body, true, "Partner"]
       }
     put "/partners/:id/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      self.update_one(Partner, params)
     end
 
     # UPDATE_MANY
     endpoint description: "Update Many Partner records",
       tags: ["Partner"],
-      responses: standard_errors( 200 => "PartnerResponse"),
+      responses: standard_errors( 200 => "PartnersResponse"),
       parameters: {
         ids: ["ID of Partner", :body, true, [Integer]],
         data: ["Data of Partner", :body, true, "Partner"]
       }
     put "/partners/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      self.update_many(Partner, params)
     end
 
     # DELETE
@@ -109,18 +113,18 @@ module Controllers
         id: ["ID of Partner", :path, true, Integer]
       }
     delete "/partners/:id/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      self.delete_record(Partner, params)
     end
 
     # DELETE_MANY
     endpoint description: "Delete MANY Partner records",
       tags: ["Partner"],
-      responses: standard_errors( 200 => "PartnerResponse"),
+      responses: standard_errors( 200 => "PartnersResponse"),
       parameters: {
         ids: ["ID of Partner", :query, true, [Integer]]
       }
     delete "/partners/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      self.delete_many(Partner, params)
     end
   end
 end

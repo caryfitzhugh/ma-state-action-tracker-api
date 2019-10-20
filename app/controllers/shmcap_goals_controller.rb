@@ -4,6 +4,7 @@ require 'uri'
 
 module Controllers
   class ShmcapGoalsController < Controllers::Base
+    EDITABLE_FIELDS = ["name"]
     type 'ShmcapGoal', {
       properties: {
         name: {type: String, description: "Name of the goal"},
@@ -12,6 +13,12 @@ module Controllers
     }
 
     type 'ShmcapGoalResponse', {
+      properties: {
+        data: {type: "ShmcapGoal", description: "ShmcapGoal records"},
+      }
+    }
+
+    type 'ShmcapGoalsResponse', {
       properties: {
         data: {type: ["ShmcapGoal"], description: "ShmcapGoal records"},
       }
@@ -45,22 +52,19 @@ module Controllers
       },
       tags: ["Shmcap Goal"]
     get "/shmcap-goals/?" do
-        raise "NOT IMPLEMENTED"
+      self.get_list(ShmcapGoal, params)
     end
 
     # GET_ONE
     # GET_MANY
     endpoint description: "Get Shmcap Goal record",
-      responses: standard_errors( 200 => "ShmcapGoalResponse"),
+      responses: standard_errors( 200 => "ShmcapGoalsResponse"),
       parameters: {
         ids: ["ID of ShmcapGoal", :path, true, [Integer]]
       },
       tags: ["Shmcap Goal"]
     get "/shmcap-goals/:ids" do
-      data = (params["ids"].split(",")).map(&:to_i).map do |id|
-        ShmcapGoal.get!(id)
-      end
-      return json(data: data)
+      self.get_one_or_many(ShmcapGoal, params)
     end
 
     # CREATE
@@ -72,7 +76,7 @@ module Controllers
       tags: ["Shmcap Goal"]
 
     post "/shmcap-goals/?", require_role: :curator do
-      raise "NOT IMPLEMENTED"
+      self.create(ShmcapGoal, params)
     end
 
     # UPDATE
@@ -84,19 +88,19 @@ module Controllers
       },
       tags: ["Shmcap Goal"]
     put "/shmcap-goals/:id/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      self.update_one(ShmcapGoal, params)
     end
 
     # UPDATE_MANY
     endpoint description: "Update Many Shmcap Goal records",
-      responses: standard_errors( 200 => "ShmcapGoalResponse"),
+      responses: standard_errors( 200 => "ShmcapGoalsResponse"),
       parameters: {
         ids: ["ID of ShmcapGoal", :body, true, [Integer]],
         data: ["Data of ShmcapGoal", :body, true, "ShmcapGoal"]
       },
       tags: ["Shmcap Goal"]
     put "/shmcap-goals/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      self.update_many(ShmcapGoal, params)
     end
 
     # DELETE
@@ -107,18 +111,18 @@ module Controllers
       },
       tags: ["Shmcap Goal"]
     delete "/shmcap-goals/:id/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      self.delete_record(ShmcapGoal, params)
     end
 
     # DELETE_MANY
     endpoint description: "Delete MANY Shmcap Goal records",
-      responses: standard_errors( 200 => "ShmcapGoalResponse"),
+      responses: standard_errors( 200 => "ShmcapGoalsResponse"),
       parameters: {
         ids: ["ID of ShmcapGoal", :query, true, [Integer]]
       },
       tags: ["Shmcap Goal"]
     delete "/shmcap-goals/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      self.delete_many(ShmcapGoal, params)
     end
   end
 end

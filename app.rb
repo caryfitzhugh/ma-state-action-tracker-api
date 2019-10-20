@@ -78,6 +78,7 @@ class App < Sinatra::Application
   get "/healthcheck", :no_swagger => true do
     "OK"
   end
+
   get "/", :no_swagger => true do
     redirect '/index.html'
   end

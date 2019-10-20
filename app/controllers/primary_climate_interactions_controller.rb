@@ -4,6 +4,7 @@ require 'uri'
 
 module Controllers
   class PrimaryClimateInteractionsController < Controllers::Base
+    EDITABLE_FIELDS = ["name"]
     type 'PrimaryClimateInteraction', {
       properties: {
         name: {type: String, description: "Name of the interaction"},
@@ -11,9 +12,16 @@ module Controllers
       }
     }
 
-    type 'PrimaryClimateInteractionResponse', {
+    type 'PrimaryClimateInteractionsResponse', {
       properties: {
         data: {type: ["PrimaryClimateInteraction"], description: "PrimaryClimateInteraction records"},
+      }
+    }
+
+
+    type 'PrimaryClimateInteractionResponse', {
+      properties: {
+        data: {type: "PrimaryClimateInteraction", description: "PrimaryClimateInteraction records"},
       }
     }
 
@@ -45,22 +53,19 @@ module Controllers
       },
       tags: ["Primary Climate Interaction"]
     get "/primary-climate-interactions/?" do
-        raise "NOT IMPLEMENTED"
+      self.get_list(PrimaryClimateInteraction, params)
     end
 
     # GET_ONE
     # GET_MANY
     endpoint description: "Get Primary Climate Interaction record",
-      responses: standard_errors( 200 => "PrimaryClimateInteractionResponse"),
+      responses: standard_errors( 200 => "PrimaryClimateInteractionsResponse"),
       parameters: {
         ids: ["ID of PrimaryClimateInteraction", :path, true, [Integer]]
       },
       tags: ["Primary Climate Interaction"]
     get "/primary-climate-interactions/:ids" do
-      data = (params["ids"].split(",")).map(&:to_i).map do |id|
-        PrimaryClimateInteraction.get!(id)
-      end
-      return json(data: data)
+      self.get_one_or_many(PrimaryClimateInteraction, params)
     end
 
     # CREATE
@@ -72,7 +77,7 @@ module Controllers
       tags: ["Primary Climate Interaction"]
 
     post "/primary-climate-interactions/?", require_role: :curator do
-      raise "NOT IMPLEMENTED"
+      self.create(PrimaryClimateInteraction, params)
     end
 
     # UPDATE
@@ -84,19 +89,19 @@ module Controllers
       },
       tags: ["Primary Climate Interaction"]
     put "/primary-climate-interactions/:id/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      self.update_one(PrimaryClimateInteraction, params)
     end
 
     # UPDATE_MANY
     endpoint description: "Update Many Primary Climate Interaction records",
-      responses: standard_errors( 200 => "PrimaryClimateInteractionResponse"),
+      responses: standard_errors( 200 => "PrimaryClimateInteractionsResponse"),
       parameters: {
         ids: ["ID of PrimaryClimateInteraction", :body, true, [Integer]],
         data: ["Data of PrimaryClimateInteraction", :body, true, "PrimaryClimateInteraction"]
       },
       tags: ["Primary Climate Interaction"]
     put "/primary-climate-interactions/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      self.update_many(PrimaryClimateInteraction, params)
     end
 
     # DELETE
@@ -107,18 +112,18 @@ module Controllers
       },
       tags: ["Primary Climate Interaction"]
     delete "/primary-climate-interactions/:id/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      self.delete_record(PrimaryClimateInteraction, params)
     end
 
     # DELETE_MANY
     endpoint description: "Delete MANY Primary Climate Interaction records",
-      responses: standard_errors( 200 => "PrimaryClimateInteractionResponse"),
+      responses: standard_errors( 200 => "PrimaryClimateInteractionsResponse"),
       parameters: {
         ids: ["ID of PrimaryClimateInteraction", :query, true, [Integer]]
       },
       tags: ["Primary Climate Interaction"]
     delete "/primary-climate-interactions/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      self.delete_many(PrimaryClimateInteraction, params)
     end
   end
 end
