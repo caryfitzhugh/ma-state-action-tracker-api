@@ -4,6 +4,7 @@ require 'uri'
 
 module Controllers
   class FundingSourcesController < Controllers::Base
+    EDITABLE_FIELDS = ["name", "href"]
     type 'FundingSource', {
       properties: {
         name: {type: String, description: "Name of the funding source"},
@@ -13,6 +14,12 @@ module Controllers
     }
 
     type 'FundingSourceResponse', {
+      properties: {
+        data: {type: "FundingSource", description: "FundingSource records"},
+      }
+    }
+
+    type 'FundingSourcesResponse', {
       properties: {
         data: {type: ["FundingSource"], description: "FundingSource records"},
       }
@@ -46,7 +53,7 @@ module Controllers
       },
       tags: ["Funding Source"]
     get "/funding-sources/?" do
-        raise "NOT IMPLEMENTED"
+      self.get_list(FundingSource, params)
     end
 
     # GET_ONE
@@ -58,10 +65,7 @@ module Controllers
       },
       tags: ["Funding Source"]
     get "/funding-sources/:ids" do
-      data = (params["ids"].split(",")).map(&:to_i).map do |id|
-        FundingSource.get!(id)
-      end
-      return json(data: data)
+      self.get_one_or_many(FundingSource, params)
     end
 
     # CREATE
@@ -74,7 +78,7 @@ module Controllers
       tags: ["Funding Source"]
 
     post "/funding-sources/?", require_role: :curator do
-      raise "NOT IMPLEMENTED"
+      self.create(FundingSource, params)
     end
 
     # UPDATE
@@ -86,19 +90,19 @@ module Controllers
       },
       tags: ["Funding Source"]
     put "/funding-sources/:id/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      self.update_one(FundingSource, params)
     end
 
     # UPDATE_MANY
     endpoint description: "Update Many Funding Source records",
-      responses: standard_errors( 200 => "FundingSourceResponse"),
+      responses: standard_errors( 200 => "FundingSourcesResponse"),
       parameters: {
         ids: ["ID of FundingSource", :body, true, [Integer]],
         data: ["Data of FundingSource", :body, true, "FundingSource"]
       },
       tags: ["Funding Source"]
     put "/funding-sources/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+        self.update_many(FundingSource, params)
     end
 
     # DELETE
@@ -109,18 +113,18 @@ module Controllers
       },
       tags: ["Funding Source"]
     delete "/funding-sources/:id/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      self.delete_record(FundingSource, params)
     end
 
     # DELETE_MANY
     endpoint description: "Delete MANY Funding Source records",
-      responses: standard_errors( 200 => "FundingSourceResponse"),
+      responses: standard_errors( 200 => "FundingSourcesResponse"),
       parameters: {
         ids: ["ID of FundingSource", :query, true, [Integer]]
       },
       tags: ["Funding Source"]
     delete "/funding-sources/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      self.delete_many(FundingSource, params)
     end
 
   end

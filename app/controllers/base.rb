@@ -28,6 +28,60 @@ module Controllers
     helpers Helpers::Authentication
     register Sinatra::SwaggerExposer
 
+    def delete_many(klass, params)
+      data = (params["ids"].split(",")).map(&:to_i).map do |id|
+        ap = klass.get!(id)
+        ap.destroy!
+        ap
+      end
+      json(data: data)
+    end
+    def delete_record(klass, params)
+      eo = klass.get!(params["id"])
+      eo.destroy!
+      json(data: eo)
+    end
+    def update_many(klass, params)
+      data = (params["ids"].split(",")).map(&:to_i).map do |id|
+        ap = klass.get!(id)
+        ap.update!(params[:data].slice(*self.EDITABLE_FIELDS))
+        ap
+      end
+      json(data: data)
+    end
+    def update_one(klass, params)
+      eo = klass.get!(params["id"])
+      eo.update!(params[:data].slice(*self.EDITABLE_FIELDS))
+      json(data: eo)
+    end
+    def create(objs, params)
+      ap = objs.create(params.slice(self.EDITABLE_FIELDS))
+      json(data: ap)
+    end
+    def get_one_or_many(objs, params)
+      data = (params["ids"].split(",")).map(&:to_i).map do |id|
+        objs.get!(id)
+      end
+      json(data: data)
+    end
+    def get_list(objs, params)
+      (params["filter"] || "").split("&").each do |fv|
+        field, value = fv.split("=", 2)
+        objs = objs.all(field => value)
+      end
+
+      order = (params["sort_by_field"] || "name").to_sym
+      if params["sort_by_order"] == "desc"
+          order = [order.desc]
+      elsif params["sort_by_order"] == "asc"
+          order = [order.asc]
+      end
+      objs = objs.all(:order => order).page(params["page"], :per_page => params["per_page"])
+      json(data: objs,
+           total: objs.count
+          )
+    end
+
     private
 
     def self.require_role(role)

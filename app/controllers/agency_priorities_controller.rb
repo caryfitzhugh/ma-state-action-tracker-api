@@ -53,22 +53,7 @@ module Controllers
       },
       tags: ["Agency Priority"]
     get "/agency-priorities/?" do
-      objs = AgencyPriority
-      (params["filter"] || "").split("&").each do |fv|
-        field, value = fv.split("=", 2)
-        objs = objs.all(field => value)
-      end
-
-      order = (params["sort_by_field"] || "name").to_sym
-      if params["sort_by_order"] == "desc"
-          order = [order.desc]
-      elsif params["sort_by_order"] == "asc"
-          order = [order.asc]
-      end
-      objs = objs.all(:order => order).page(params["page"], :per_page => params["per_page"])
-      json(data: objs,
-           total: objs.count
-          )
+      self.get_list(AgencyPriority, params)
     end
 
     # GET_ONE
@@ -80,10 +65,7 @@ module Controllers
       },
       tags: ["Agency Priority"]
     get "/agency-priorities/:ids" do
-      data = (params["ids"].split(",")).map(&:to_i).map do |id|
-        AgencyPriority.get!(id)
-      end
-      return json(data: data)
+      self.get_one_or_many(AgencyPriority, params)
     end
 
     # CREATE
@@ -95,9 +77,7 @@ module Controllers
       tags: ["Agency Priority"]
 
     post "/agency-priorities/?", require_role: :curator do
-      ap = AgencyPriority.create(slice(*EDITABLE_FIELDS))
-      puts(ap.to_json)
-      json(data: ap)
+      self.create(AgencyPriority, params)
     end
 
     # UPDATE
@@ -109,9 +89,7 @@ module Controllers
       },
       tags: ["Agency Priority"]
     put "/agency-priorities/:id/?", require_role: :curator do
-      ap = AgencyPriority.get!(params["id"])
-      ap.update!(params[:data].slice(*EDITABLE_FIELDS))
-      return json(data: ap)
+      self.update_one(AgencyPriority, params)
     end
 
     # UPDATE_MANY
@@ -123,12 +101,7 @@ module Controllers
       },
       tags: ["Agency Priority"]
     put "/agency-priorities/?", require_role: :curator do
-      data = (params["ids"].split(",")).map(&:to_i).map do |id|
-        ap = AgencyPriority.get!(id)
-        ap.update!(params[:data].slice(*EDITABLE_FIELDS))
-        ap
-      end
-      return json(data: data)
+      self.update_many(AgencyPriority, params)
     end
 
     # DELETE
@@ -139,9 +112,7 @@ module Controllers
       },
       tags: ["Agency Priority"]
     delete "/agency-priorities/:id/?", require_role: :curator do
-      ap = AgencyPriority.get!(params["id"])
-      ap.destroy!
-      return json(data: ap)
+      self.delete_record(AgencyPriority, params)
     end
 
     # DELETE_MANY
@@ -152,12 +123,7 @@ module Controllers
       },
       tags: ["Agency Priority"]
     delete "/agency-priorities/?", require_role: :curator do
-      data = (params["ids"].split(",")).map(&:to_i).map do |id|
-        ap = AgencyPriority.get!(id)
-        ap.destroy!
-        ap
-      end
-      return json(data: data)
+      self.delete_many(AgencyPriority, params)
     end
   end
 end

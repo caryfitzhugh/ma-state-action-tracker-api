@@ -60,22 +60,7 @@ module Controllers
       },
       tags: ["Exec Office"]
     get "/exec-offices/?" do
-      objs = ExecOffice
-      (params["filter"] || "").split("&").each do |fv|
-        field, value = fv.split("=", 2)
-        objs = objs.all(field => value)
-      end
-
-      order = (params["sort_by_field"] || "name").to_sym
-      if params["sort_by_order"] == "desc"
-          order = [order.desc]
-      elsif params["sort_by_order"] == "asc"
-          order = [order.asc]
-      end
-      objs = objs.all(:order => order).page(params["page"], :per_page => params["per_page"])
-      json(data: objs,
-           total: objs.count
-          )
+      self.get_list(ExecOffice, params)
     end
 
     # GET_ONE
@@ -87,10 +72,7 @@ module Controllers
       },
       tags: ["Exec Office"]
     get "/exec-offices/:ids" do
-      data = (params["ids"].split(",")).map(&:to_i).map do |id|
-        ExecOffice.get!(id)
-      end
-      return json(data: data)
+      self.get_one_or_many(ExecOffice, params)
     end
 
     # CREATE
@@ -103,9 +85,7 @@ module Controllers
       tags: ["Exec Office"]
 
     post "/exec-offices/?", require_role: :curator do
-      eo = ExecOffice.create(slice(*EDITABLE_FIELDS))
-      puts(eo.to_json)
-      json(data: eo)
+      self.create(ExecOffice, params)
     end
 
     # UPDATE
@@ -117,9 +97,7 @@ module Controllers
       },
       tags: ["Exec Office"]
     put "/exec-offices/:id/?", require_role: :curator do
-      eo = ExecOffice.get!(params["id"])
-      eo.update!(params[:data].slice(*EDITABLE_FIELDS))
-      return json(data: eo)
+      self.update_one(ExecOffice, params)
     end
 
     # UPDATE_MANY
@@ -131,12 +109,7 @@ module Controllers
       },
       tags: ["Exec Office"]
     put "/exec-offices/?", require_role: :curator do
-      data = (params["ids"].split(",")).map(&:to_i).map do |id|
-        eo = ExecOffice.get!(id)
-        eo.update!(params[:data].slice(*EDITABLE_FIELDS))
-        eo
-      end
-      return json(data: data)
+      self.update_many(ExecOffice, params)
     end
 
     # DELETE
@@ -147,9 +120,7 @@ module Controllers
       },
       tags: ["Exec Office"]
     delete "/exec-offices/:id/?", require_role: :curator do
-      eo = ExecOffice.get!(params["id"])
-      eo.destroy!
-      return json(data: eo)
+      self.delete_record(ExecOffic, params)
     end
 
     # DELETE_MANY
@@ -160,12 +131,7 @@ module Controllers
       },
       tags: ["Exec Office"]
     delete "/exec-offices/?", require_role: :curator do
-      data = (params["ids"].split(",")).map(&:to_i).map do |id|
-        eo = ExecOffice.get!(id)
-        eo.destroy!
-        eo
-      end
-      return json(data: data)
+      self.delete_many(ExecOffic, params)
     end
   end
 end
