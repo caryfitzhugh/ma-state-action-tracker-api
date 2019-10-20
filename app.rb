@@ -75,6 +75,9 @@ class App < Sinatra::Application
   use Controllers::ShmcapGoalsController
   use Controllers::UsersController
 
+  get "/healthcheck", :no_swagger => true do
+    "OK"
+  end
   get "/", :no_swagger => true do
     redirect '/index.html'
   end
