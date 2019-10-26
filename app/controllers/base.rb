@@ -28,18 +28,13 @@ module Controllers
     helpers Helpers::Authentication
     register Sinatra::SwaggerExposer
 
-    def delete_many(klass, params)
-      data = (params["ids"].split(",")).map(&:to_i).map do |id|
+    def delete_many(klass, ids)
+      data = ids.map do |id|
         ap = klass.get!(id)
         ap.destroy!
         ap
       end
       json(data: data)
-    end
-    def delete_record(klass, params)
-      eo = klass.get!(params["id"])
-      eo.destroy!
-      json(data: eo)
     end
     def update_many(klass, params)
       data = (params["ids"].split(",")).map(&:to_i).map do |id|
@@ -48,11 +43,6 @@ module Controllers
         ap
       end
       json(data: data)
-    end
-    def update_one(klass, id, params)
-      eo = klass.get!(id)
-      eo.update!(params.slice(*self.class.EDITABLE_FIELDS))
-      json(data: eo)
     end
     def create(objs, params)
       ap = objs.create(params.slice(*self.class.EDITABLE_FIELDS))

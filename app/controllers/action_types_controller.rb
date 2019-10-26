@@ -88,18 +88,6 @@ module Controllers
       self.create(ActionType, params['parsed_body']['action_type'])
     end
 
-    # UPDATE
-    endpoint description: "Update Action Type record",
-      responses: standard_errors( 200 => "ActionTypeResponse"),
-      parameters: {
-        id: ["ID of ActionType", :path, true, Integer],
-        action_type: ["ActionType", :body, true, 'NewActionType'],
-      },
-      tags: ["Action Type"]
-    put "/action-types/:id/?", require_role: :curator do
-      self.update_one(params["id"], params['parsed_body']['action_type'])
-    end
-
     # UPDATE_MANY
     endpoint description: "Update Many Action Type records",
       responses: standard_errors( 200 => "ActionTypesResponse"),
@@ -109,17 +97,6 @@ module Controllers
       tags: ["Action Type"]
     put "/action-types/?", require_role: :curator do
       self.update_many(ActionType, params['parsed_body']['action_types'])
-    end
-
-    # DELETE
-    endpoint description: "Delete Action Type record",
-      responses: standard_errors( 200 => "ActionTypeResponse"),
-      parameters: {
-        id: ["ID of ActionType", :path, true, Integer]
-      },
-      tags: ["Action Type"]
-    delete "/action-types/:id/?", require_role: :curator do
-      self.delete_record(ActionType, params)
     end
 
     # DELETE_MANY
