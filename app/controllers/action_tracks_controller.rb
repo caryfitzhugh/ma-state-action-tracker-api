@@ -4,6 +4,21 @@ require 'uri'
 
 module Controllers
   class ActionTracksController < Controllers::Base
+    def self.EDITABLE_FIELDS
+      ["start_on",
+       "end_on",
+       "description",
+       "exec_office",
+       "lead_agency",
+       "partners",
+       "agency_priority",
+       "funding_sources",
+       "shmcap_goals",
+       "primary_climate_interactions",
+       "global_action"
+      ]
+    end
+
     type 'ActionTrack', {
       properties: {
         :id => {type: Integer},

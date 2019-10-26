@@ -4,7 +4,10 @@ require 'uri'
 
 module Controllers
   class ExecOfficesController < Controllers::Base
-    EDITABLE_FIELDS = ["name", "href"]
+    def self.EDITABLE_FIELDS
+      ["name", "href"]
+    end
+
     type 'ExecOffice', {
       properties: {
         name: {type: String, description: "Name of the office"},

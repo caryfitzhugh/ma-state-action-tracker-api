@@ -4,7 +4,10 @@ require 'uri'
 
 module Controllers
   class PartnersController < Controllers::Base
-    EDITABLE_FIELDS = ['name', 'href']
+    def self.EDITABLE_FIELDS
+      ['name', 'href']
+    end
+
     type 'Partner', {
       properties: {
         name: {type: String, description: "Name of the partner"},

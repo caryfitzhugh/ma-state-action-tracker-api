@@ -4,7 +4,9 @@ require 'uri'
 
 module Controllers
   class ActionTypesController < Controllers::Base
-    EDITABLE_FIELDS = ['type']
+    def self.EDITABLE_FIELDS
+      ['type']
+    end
 
     type 'ActionType', {
       properties: {
@@ -83,7 +85,7 @@ module Controllers
       tags: ["Action Type"]
 
     post "/action-types/?", require_role: :curator do
-      self.create(ActionType, params['parsed_body'])
+      self.create(ActionType, params['parsed_body']['action_type'])
     end
 
     # UPDATE

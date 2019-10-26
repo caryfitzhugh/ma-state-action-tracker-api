@@ -4,7 +4,9 @@ require 'uri'
 
 module Controllers
   class ActionStatusesController < Controllers::Base
-    EDITABLE_FIELDS = ['status']
+    def self.EDITABLE_FIELDS
+      ['status']
+    end
 
     type 'ActionStatus', {
       properties: {

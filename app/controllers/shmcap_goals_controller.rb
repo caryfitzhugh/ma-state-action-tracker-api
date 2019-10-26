@@ -4,7 +4,10 @@ require 'uri'
 
 module Controllers
   class ShmcapGoalsController < Controllers::Base
-    EDITABLE_FIELDS = ["name"]
+    def self.EDITABLE_FIELDS
+      ["name"]
+    end
+
     type 'ShmcapGoal', {
       properties: {
         name: {type: String, description: "Name of the goal"},

@@ -4,7 +4,10 @@ require 'uri'
 
 module Controllers
   class LeadAgenciesController < Controllers::Base
-    EDITABLE_FIELDS = ['name', 'href']
+    def self.EDITABLE_FIELDS
+      ['name', 'href']
+    end
+
     type 'LeadAgency', {
       properties: {
         name: {type: String, description: "Name of the agency"},

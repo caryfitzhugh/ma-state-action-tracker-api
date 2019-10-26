@@ -4,7 +4,9 @@ require 'uri'
 
 module Controllers
   class FundingSourcesController < Controllers::Base
-    EDITABLE_FIELDS = ["name", "href"]
+    def self.EDITABLE_FIELDS
+      ["name", "href"]
+    end
     type 'FundingSource', {
       properties: {
         name: {type: String, description: "Name of the funding source"},

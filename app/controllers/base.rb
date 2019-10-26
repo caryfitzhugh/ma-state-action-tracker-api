@@ -44,18 +44,18 @@ module Controllers
     def update_many(klass, params)
       data = (params["ids"].split(",")).map(&:to_i).map do |id|
         ap = klass.get!(id)
-        ap.update!(params[:data].slice(*self.EDITABLE_FIELDS))
+        ap.update!(params[:data].slice(*self.class.EDITABLE_FIELDS))
         ap
       end
       json(data: data)
     end
     def update_one(klass, params)
       eo = klass.get!(params["id"])
-      eo.update!(params[:data].slice(*self.EDITABLE_FIELDS))
+      eo.update!(params[:data].slice(*self.class.EDITABLE_FIELDS))
       json(data: eo)
     end
     def create(objs, params)
-      ap = objs.create(params.slice(self.EDITABLE_FIELDS))
+      ap = objs.create(params.slice(*self.class.EDITABLE_FIELDS))
       json(data: ap)
     end
     def get_one_or_many(objs, params)
@@ -70,7 +70,7 @@ module Controllers
         objs = objs.all(field => value)
       end
 
-      order = (params["sort_by_field"] || self.EDITABLE_FIELDS[0]).to_sym
+      order = (params["sort_by_field"] || self.class.EDITABLE_FIELDS[0]).to_sym
       if params["sort_by_order"] == "desc"
           order = [order.desc]
       elsif params["sort_by_order"] == "asc"

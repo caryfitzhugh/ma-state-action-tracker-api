@@ -4,7 +4,9 @@ require 'uri'
 
 module Controllers
   class AgencyPrioritiesController < Controllers::Base
-    EDITABLE_FIELDS = ['name']
+    def self.EDITABLE_FIELDS
+      ['name']
+    end
 
     type 'AgencyPriority', {
       properties: {
