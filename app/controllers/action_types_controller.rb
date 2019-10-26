@@ -12,6 +12,12 @@ module Controllers
         id: {type: Integer, description: "ID"}
       }
     }
+    type 'NewActionType', {
+      properties: {
+        type: {type: String, description: "Name of the priority"}
+      }
+    }
+
 
     type 'ActionTypesResponse', {
       properties: {
@@ -72,12 +78,12 @@ module Controllers
     endpoint description: "Create Action Type",
       responses: standard_errors( 200 => "ActionTypeResponse"),
       parameters: {
-        name: ["ActionType name", :body, true, String],
+        action_type: ["ActionType", :body, true, 'NewActionType'],
       },
       tags: ["Action Type"]
 
     post "/action-types/?", require_role: :curator do
-      self.create(ActionType, params)
+      self.create(ActionType, params['parsed_body'])
     end
 
     # UPDATE
@@ -85,7 +91,7 @@ module Controllers
       responses: standard_errors( 200 => "ActionTypeResponse"),
       parameters: {
         id: ["ID of ActionType", :path, true, Integer],
-        data: ["Data of ActionType", :body, true, "ActionType"]
+        data: ["Data of ActionType", :body, true, "NewActionType"]
       },
       tags: ["Action Type"]
     put "/action-types/:id/?", require_role: :curator do
@@ -97,7 +103,7 @@ module Controllers
       responses: standard_errors( 200 => "ActionTypesResponse"),
       parameters: {
         ids: ["ID of ActionType", :body, true, [Integer]],
-        data: ["Data of ActionType", :body, true, "ActionType"]
+        data: ["Data of ActionType", :body, true, "NewActionType"]
       },
       tags: ["Action Type"]
     put "/action-types/?", require_role: :curator do

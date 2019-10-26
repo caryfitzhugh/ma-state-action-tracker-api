@@ -5,14 +5,13 @@ module Controllers
   class AuthenticationController < Controllers::Base
     endpoint description: "Is user (cookie) logged in?",
       responses: {
-        200 => [],
-        403 => []},
+        200 => []},
       parameters: {}
     get "/logged_in" do
-      if current_user || CONFIG.pretend_admin
-        json({msg: "Logged In"})
+      if current_user
+        json({logged_in: true})
       else
-        halt 403
+        json({logged_in: false})
       end
     end
 
