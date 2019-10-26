@@ -26,8 +26,6 @@ module Controllers
         password: ["Password", :query, true, String]
       }
     post "/sign_in" do
-      require 'pry'
-      binding.pry
       user =  User.first(:username => params[:username])
 
       if user && user.password == params[:password]
