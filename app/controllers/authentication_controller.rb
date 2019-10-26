@@ -40,7 +40,7 @@ module Controllers
     endpoint description: "User sign out action",
       responses: {200 => []},
       parameters: {}
-    get "/sign_out" do
+    post "/sign_out" do
       session.clear
       json({msg: "OK"})
     end
