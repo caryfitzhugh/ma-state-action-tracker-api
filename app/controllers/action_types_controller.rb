@@ -92,8 +92,7 @@ module Controllers
     endpoint description: "Update Action Type record",
       responses: standard_errors( 200 => "ActionTypeResponse"),
       parameters: {
-        id: ["ID of ActionType", :path, true, Integer],
-        data: ["Data of ActionType", :body, true, "NewActionType"]
+        action_type: ["ActionType", :body, true, 'ActionType'],
       },
       tags: ["Action Type"]
     put "/action-types/:id/?", require_role: :curator do
@@ -104,8 +103,7 @@ module Controllers
     endpoint description: "Update Many Action Type records",
       responses: standard_errors( 200 => "ActionTypesResponse"),
       parameters: {
-        ids: ["ID of ActionType", :body, true, [Integer]],
-        data: ["Data of ActionType", :body, true, "NewActionType"]
+        action_types: ["ActionType", :body, true, ['ActionType']],
       },
       tags: ["Action Type"]
     put "/action-types/?", require_role: :curator do
