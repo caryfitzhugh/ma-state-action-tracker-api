@@ -70,7 +70,7 @@ module Controllers
         objs = objs.all(field => value)
       end
 
-      order = (params["sort_by_field"] || "name").to_sym
+      order = (params["sort_by_field"] || self.EDITABLE_FIELDS[0]).to_sym
       if params["sort_by_order"] == "desc"
           order = [order.desc]
       elsif params["sort_by_order"] == "asc"
