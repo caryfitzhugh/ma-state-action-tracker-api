@@ -49,9 +49,9 @@ module Controllers
       end
       json(data: data)
     end
-    def update_one(klass, params)
-      eo = klass.get!(params["id"])
-      eo.update!(params[:data].slice(*self.class.EDITABLE_FIELDS))
+    def update_one(klass, id, params)
+      eo = klass.get!(id)
+      eo.update!(params.slice(*self.class.EDITABLE_FIELDS))
       json(data: eo)
     end
     def create(objs, params)

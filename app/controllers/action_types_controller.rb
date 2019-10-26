@@ -92,11 +92,12 @@ module Controllers
     endpoint description: "Update Action Type record",
       responses: standard_errors( 200 => "ActionTypeResponse"),
       parameters: {
-        action_type: ["ActionType", :body, true, 'ActionType'],
+        id: ["ID of ActionType", :path, true, Integer],
+        action_type: ["ActionType", :body, true, 'NewActionType'],
       },
       tags: ["Action Type"]
     put "/action-types/:id/?", require_role: :curator do
-      self.update_one(ActionType, params)
+      self.update_one(params["id"], params['parsed_body']['action_type'])
     end
 
     # UPDATE_MANY
@@ -107,7 +108,7 @@ module Controllers
       },
       tags: ["Action Type"]
     put "/action-types/?", require_role: :curator do
-      self.update_many(ActionType, params)
+      self.update_many(ActionType, params['parsed_body']['action_types'])
     end
 
     # DELETE
