@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'sinatra/swagger-exposer/swagger-exposer'
+require 'sinatra/cross_origin'
 require 'json'
 require 'app/helpers'
 
@@ -27,6 +28,11 @@ module Controllers
   class Base < Sinatra::Application
     helpers Helpers::Authentication
     register Sinatra::SwaggerExposer
+    register Sinatra::CrossOrigin
+
+    configure do
+      enable :cross_origin
+    end
 
     def delete_many(klass, ids)
       data = ids.map do |id|
