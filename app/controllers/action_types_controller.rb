@@ -14,12 +14,12 @@ module Controllers
         id: {type: Integer, description: "ID"}
       }
     }
+
     type 'NewActionType', {
       properties: {
         type: {type: String, description: "Name of the priority"}
       }
     }
-
 
     type 'ActionTypesResponse', {
       properties: {

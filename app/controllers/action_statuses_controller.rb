@@ -10,11 +10,15 @@ module Controllers
 
     type 'ActionStatus', {
       properties: {
-        type: {type: String, description: "Name of the priority"},
+        status: {type: String, description: "Name of the status"},
         id: {type: Integer, description: "ID"}
       }
     }
-
+    type 'NewActionStatus', {
+      properties: {
+        status: {type: String, description: "Name of the status"},
+      }
+    }
     type 'ActionStatusesResponse', {
       properties: {
         data: {type: ["ActionStatus"], description: "ActionStatus records"},
