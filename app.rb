@@ -37,7 +37,6 @@ set :allow_origin, :any
 set :allow_methods, [:get, :put, :delete, :post, :options]
 set :allow_credentials, true
 set :max_age, "1728000"
-set :expose_headers, ['Content-Type']
 set :port, 5000
 
 class App < Sinatra::Application
@@ -92,7 +91,11 @@ class App < Sinatra::Application
 
   options "*", :no_swagger => true do
     response.headers["Allow"] = "HEAD,GET,PUT,POST,DELETE,OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept"
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+    response.headers["Access-Control-Allow-Origin"] =  "*"
+    response.headers["Access-Control-Allow-Methods"] = "*"
+    # GET,HEAD,OPTIONS,POST,PUT"
+    response.headers["Access-Control-Allow-Headers"] = "Authorization, X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept, withcredentials"
     200
   end
 end
