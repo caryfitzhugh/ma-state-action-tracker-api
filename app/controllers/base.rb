@@ -28,6 +28,11 @@ module Controllers
     helpers Helpers::Authentication
     register Sinatra::SwaggerExposer
 
+  register Sinatra::CrossOrigin
+
+  configure do
+    enable :cross_origin
+  end
 
     def delete_many(klass, ids)
       data = ids.map do |id|
