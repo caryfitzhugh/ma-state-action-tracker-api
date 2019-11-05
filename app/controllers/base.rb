@@ -83,6 +83,7 @@ module Controllers
     def self.require_role(role)
       condition do
         unless current_user && (current_user.is_admin? || current_user.roles.include?(role.to_s))
+          puts "current user is: " + current_user
           # CONFIG pretend_admin
           unless CONFIG.pretend_admin
             content_type :json
