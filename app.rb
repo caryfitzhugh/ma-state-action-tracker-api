@@ -95,7 +95,7 @@ class App < Sinatra::Application
     response.headers["Access-Control-Allow-Origin"] =  env["HTTP_ORIGIN"]
     response.headers["Access-Control-Allow-Methods"] = env["HTTP_ACCESS_CONTROL_REQUEST_METHOD"]
     # GET,HEAD,OPTIONS,POST,PUT"
-    response.headers["Access-Control-Allow-Headers"] = "Authorization, X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept, withcredentials"
+    response.headers["Access-Control-Allow-Headers"] = "Authorization, X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept, Cookie, *"
     200
   end
 end
