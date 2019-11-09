@@ -78,47 +78,23 @@ module Controllers
     endpoint description: "Create Action Status",
       responses: standard_errors( 200 => "ActionStatusResponse"),
       parameters: {
-        name: ["ActionStatus name", :body, true, String],
+        action_status: ["ActionStatus", :body, true, 'NewActionStatus'],
       },
       tags: ["Action Status"]
 
     post "/action-statuses/?", require_role: :curator do
-      self.create(ActionStatus, params)
-    end
-
-    # UPDATE
-    endpoint description: "Update Action Status record",
-      responses: standard_errors( 200 => "ActionStatusResponse"),
-      parameters: {
-        id: ["ID of ActionStatus", :path, true, Integer],
-        data: ["Data of ActionStatus", :body, true, "ActionStatus"]
-      },
-      tags: ["Action Status"]
-    put "/action-statuses/:id/?", require_role: :curator do
-      self.update_one(ActionStatus, params)
+      self.create(ActionStatus, params['parsed_body']['action_status'])
     end
 
     # UPDATE_MANY
     endpoint description: "Update Many Action Status records",
       responses: standard_errors( 200 => "ActionStatusesResponse"),
       parameters: {
-        ids: ["ID of ActionStatus", :body, true, [Integer]],
-        data: ["Data of ActionStatus", :body, true, "ActionStatus"]
+        action_statuses: ["ActionStatus", :body, true, ['ActionStatus']],
       },
       tags: ["Action Status"]
     put "/action-statuses/?", require_role: :curator do
-      self.update_many(ActionStatus, params)
-    end
-
-    # DELETE
-    endpoint description: "Delete Action Status record",
-      responses: standard_errors( 200 => "ActionStatusResponse"),
-      parameters: {
-        id: ["ID of ActionStatus", :path, true, Integer]
-      },
-      tags: ["Action Status"]
-    delete "/action-statuses/:id/?", require_role: :curator do
-      self.delete_record(ActionStatus, params)
+      self.update_many(ActionStatus, params['parsed_body']['action_statuses'])
     end
 
     # DELETE_MANY

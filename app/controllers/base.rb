@@ -42,27 +42,28 @@ module Controllers
       end
       json(data: data)
     end
-    def update_many(klass, params)
-      data = (params["ids"].split(",")).map(&:to_i).map do |id|
+    def update_many(klass, records)
+      data = records.map do |record|
+        id = record['id']
         ap = klass.get!(id)
-        ap.update!(params[:data].slice(*self.class.EDITABLE_FIELDS))
+        ap.update!(record.slice(*self.class.EDITABLE_FIELDS))
         ap
       end
       json(data: data)
     end
     def create(objs, params)
       ap = objs.create(params.slice(*self.class.EDITABLE_FIELDS))
+      ap.save!
       json(data: ap)
     end
-    def get_one_or_many(objs, params)
-      data = (params["ids"].split(",")).map(&:to_i).map do |id|
+    def get_one_or_many(objs, ids)
+      data = ids.map(&:to_i).map do |id|
         objs.get!(id)
       end
       json(data: data)
     end
     def get_list(objs, params)
-      (params["filter"] || "").split("&").each do |fv|
-        field, value = fv.split("=", 2)
+      JSON.parse(params["filter"] || "{}").each do |field, value|
         objs = objs.all(field => value)
       end
 

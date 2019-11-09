@@ -65,40 +65,74 @@ module Controllers
     end
 
     # GET_ONE
+    endpoint description: "Get Action Type record",
+      responses: standard_errors( 200 => "ActionTypesResponse"),
+      parameters: {
+        id: ["ID of ActionType", :path, true, Integer]
+      },
+      tags: ["Action Type"]
+    get "/action-types/:id" do
+      self.get_one_or_many(ActionType, [params["id"]])
+    end
+    #
     # GET_MANY
     endpoint description: "Get Action Type record",
       responses: standard_errors( 200 => "ActionTypesResponse"),
       parameters: {
-        ids: ["ID of ActionType", :path, true, [Integer]]
+        ids: ["ID of ActionType", :query, true, [Integer]]
       },
       tags: ["Action Type"]
-    get "/action-types/:ids" do
-      self.get_one_or_many(ActionType, params)
+    get "/action-types/by-id" do
+      self.get_one_or_many(ActionType, params['ids'])
     end
 
     # CREATE
     endpoint description: "Create Action Type",
       responses: standard_errors( 200 => "ActionTypeResponse"),
       parameters: {
-        action_type: ["ActionType", :body, true, 'NewActionType'],
+        data: ["ActionType", :body, true, 'NewActionType'],
       },
       tags: ["Action Type"]
 
     post "/action-types/?", require_role: :curator do
-      self.create(ActionType, params['parsed_body']['action_type'])
+      self.create(ActionType, params['parsed_body']['data'])
+    end
+
+    # UPDATE_ONE
+    endpoint description: "Update One Action Type records",
+      responses: standard_errors( 200 => "ActionTypesResponse"),
+      parameters: {
+        id: ["ID of ActionType", :path, true, Integer],
+        data: ["ActionType", :body, true, 'ActionType'],
+      },
+      tags: ["Action Type"]
+    put "/action-types/:id", require_role: :curator do
+      data = params['parsed_body']['data']
+      data['id'] = params['id']
+      self.update_many(ActionType, [data])
     end
 
     # UPDATE_MANY
     endpoint description: "Update Many Action Type records",
       responses: standard_errors( 200 => "ActionTypesResponse"),
       parameters: {
-        action_types: ["ActionType", :body, true, ['ActionType']],
+        data: ["ActionType", :body, true, ['ActionType']],
       },
       tags: ["Action Type"]
     put "/action-types/?", require_role: :curator do
-      self.update_many(ActionType, params['parsed_body']['action_types'])
+      self.update_many(ActionType, params['parsed_body']['data'])
     end
 
+    # DELETE_ONE
+    endpoint description: "Delete MANY Action Type records",
+      responses: standard_errors( 200 => "ActionTypesResponse"),
+      parameters: {
+        id: ["ID of ActionType", :path, true, Integer]
+      },
+      tags: ["Action Type"]
+    delete "/action-types/:id", require_role: :curator do
+      self.delete_many(ActionType, [params['id']].compact)
+    end
     # DELETE_MANY
     endpoint description: "Delete MANY Action Type records",
       responses: standard_errors( 200 => "ActionTypesResponse"),
@@ -107,7 +141,7 @@ module Controllers
       },
       tags: ["Action Type"]
     delete "/action-types/?", require_role: :curator do
-      self.delete_many(ActionType, params)
+      self.delete_many(ActionType, params['ids'])
     end
   end
 end

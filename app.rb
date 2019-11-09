@@ -38,15 +38,19 @@ set :allow_methods, [:get, :put, :delete, :post, :options]
 set :allow_credentials, true
 set :max_age, "1728000"
 set :port, 5000
+set :expose_headers, ['Content-Type']
+set :protection, except: [:http_origin]
 
 class App < Sinatra::Application
   register Sinatra::SwaggerExposer
   register Sinatra::CrossOrigin
 
+
   use Rack::Session::Cookie, :key => 'rack.session',
                              :expire_after => 60 * 60 * 24, # 1 day
                              :secret => ENV["SESSION_SECRET"],
                              :old_secret => ENV["OLD_SESSION_SECRET"]
+
   configure do
     enable :cross_origin
   end
@@ -90,11 +94,9 @@ class App < Sinatra::Application
   end
 
   options "*", :no_swagger => true do
-    response.headers["Allow"] = "HEAD,GET,PUT,POST,DELETE,OPTIONS"
     response.headers["Access-Control-Allow-Credentials"] = "true"
     response.headers["Access-Control-Allow-Origin"] =  env["HTTP_ORIGIN"]
-    response.headers["Access-Control-Allow-Methods"] = env["HTTP_ACCESS_CONTROL_REQUEST_METHOD"]
-    # GET,HEAD,OPTIONS,POST,PUT"
+    response.headers["Access-Control-Allow-Methods"] = "HEAD,GET,PUT,POST,DELETE,OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "Authorization, X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept, Set-Cookie, Cookie, withcredentials, *"
     200
   end
