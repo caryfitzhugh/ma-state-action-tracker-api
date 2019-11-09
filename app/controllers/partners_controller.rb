@@ -16,6 +16,13 @@ module Controllers
       }
     }
 
+    type 'NewPartner', {
+      properties: {
+        name: {type: String, description: "Name of the partner"},
+        href: {type: String, description: "Href of the partner"},
+      }
+    }
+
     type 'PartnersResponse', {
       properties: {
         data: {type: ["Partner"], description: "Partner records"},
@@ -37,7 +44,6 @@ module Controllers
 
     # GET_LIST
     endpoint description: "Get List of Partner records",
-      tags: ["Partner"],
       responses: standard_errors( 200 => "PartnerIndexResponse"),
       parameters: {
         page: ["Page Start", :query, false, Integer, {
@@ -54,80 +60,92 @@ module Controllers
         sort_by_field: ["Field to sort on", :query, false, String],
         sort_by_order: ["Field sort direction (ASC/DESC)", :query, false, String],
         filter: ["Filter to sort on {field_name: value}", :query, false, String],
-      }
+      },
+      tags: ["Partner"]
     get "/partners/?" do
       self.get_list(Partner, params)
     end
 
-    # GET_ONE
     # GET_MANY
     endpoint description: "Get Partner record",
-      tags: ["Partner"],
       responses: standard_errors( 200 => "PartnersResponse"),
       parameters: {
-        ids: ["ID of Partner", :path, true, [Integer]]
-      }
-    get "/partners/:ids" do
-      self.get_one_or_many(Partner, params)
+        ids: ["ID of Partner", :query, true, [Integer]]
+      },
+      tags: ["Partner"]
+    get "/partners/get-many/?" do
+      self.get_one_or_many(Partner, params['ids'])
+    end
+
+    # GET_ONE
+    endpoint description: "Get Partner record",
+      responses: standard_errors( 200 => "PartnersResponse"),
+      parameters: {
+        id: ["ID of Partner", :path, true, Integer]
+      },
+      tags: ["Partner"]
+    get "/action-statuses/:id" do
+      self.get_one_or_many(Partner, [params["id"]])
     end
 
     # CREATE
     endpoint description: "Create Partner",
-      tags: ["Partner"],
       responses: standard_errors( 200 => "PartnerResponse"),
       parameters: {
-        name: ["Partner name", :body, true, String],
-        href: ["Partner href", :body, true, String],
-      }
+        data: ["Partner", :body, true, "NewPartner"]
+      },
+      tags: ["Partner"]
 
     post "/partners/?", require_role: :curator do
-      self.create(Partner, params)
+      self.create(Partner, params['parsed_body']['data'])
     end
 
     # UPDATE
     endpoint description: "Update Partner record",
-      tags: ["Partner"],
-      responses: standard_errors( 200 => "PartnerResponse"),
+      responses: standard_errors( 200 => "PartnersResponse"),
       parameters: {
         id: ["ID of Partner", :path, true, Integer],
         data: ["Data of Partner", :body, true, "Partner"]
-      }
+      },
+      tags: ["Partner"]
     put "/partners/:id/?", require_role: :curator do
-      self.update_one(Partner, params)
+      data = params['parsed_body']['data']
+      data['id'] = params['id']
+      self.update_many(Partner, [data])
     end
 
     # UPDATE_MANY
     endpoint description: "Update Many Partner records",
-      tags: ["Partner"],
       responses: standard_errors( 200 => "PartnersResponse"),
       parameters: {
-        ids: ["ID of Partner", :body, true, [Integer]],
-        data: ["Data of Partner", :body, true, "Partner"]
-      }
+        data: ["Data of Partners", :body, true, ["Partner"]]
+      },
+      tags: ["Partner"]
     put "/partners/?", require_role: :curator do
-      self.update_many(Partner, params)
+        self.update_many(Partner, params['parsed_body']['data'])
     end
 
     # DELETE
     endpoint description: "Delete Partner record",
-      tags: ["Partner"],
-      responses: standard_errors( 200 => "PartnerResponse"),
+      responses: standard_errors( 200 => "PartnersResponse"),
       parameters: {
         id: ["ID of Partner", :path, true, Integer]
-      }
+      },
+      tags: ["Partner"]
     delete "/partners/:id/?", require_role: :curator do
-      self.delete_record(Partner, params)
+      self.delete_many(Partner, [params['id']].compact)
     end
 
     # DELETE_MANY
     endpoint description: "Delete MANY Partner records",
-      tags: ["Partner"],
       responses: standard_errors( 200 => "PartnersResponse"),
       parameters: {
         ids: ["ID of Partner", :query, true, [Integer]]
-      }
+      },
+      tags: ["Partner"]
     delete "/partners/?", require_role: :curator do
-      self.delete_many(Partner, params)
+      self.delete_many(Partner, params['ids'])
     end
+
   end
 end

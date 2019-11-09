@@ -35,7 +35,7 @@ module Controllers
   end
 
     def delete_many(klass, ids)
-      data = ids.map do |id|
+      data = [ids].flatten.map do |id|
         ap = klass.get!(id)
         ap.destroy!
         ap
@@ -57,7 +57,7 @@ module Controllers
       json(data: ap)
     end
     def get_one_or_many(objs, ids)
-      data = ids.map(&:to_i).map do |id|
+      data = [ids].flatten.map(&:to_i).map do |id|
         objs.get!(id)
       end
       json(data: data)

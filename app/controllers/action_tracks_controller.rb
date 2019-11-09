@@ -36,9 +36,31 @@ module Controllers
       }
     }
 
-    type 'ActionTrackResponse', {
+    type 'NewActionTrack', {
+      properties: {
+        :start_on => {type: String, example: "2017-01-31"},
+        :end_on => {type: String, example: "2017-01-31"},
+
+        :description => {type: String},
+        :exec_office => {type: "ExecOffice"},
+        :lead_agency => {type: "LeadAgency"},
+        :partners => {type: ["Partner"]},
+        :agency_priority => {type: "AgencyPriority"},
+        :funding_sources => {type: ["FundingSource"]},
+        :shmcap_goals => {type: ["ShmcapGoal"]},
+        :primary_climate_interactions => {type: ["PrimaryClimateInteraction"]}
+      }
+    }
+
+    type 'ActionTracksResponse', {
       properties: {
         data: {type: ["ActionTrack"], description: "ActionTrack records"},
+      }
+    }
+
+    type 'ActionTrackResponse', {
+      properties: {
+        data: {type: "ActionTrack", description: "ActionTrack records"},
       }
     }
 
@@ -69,91 +91,92 @@ module Controllers
         filter: ["Filter to sort on {field_name: value}", :query, false, String],
       },
       tags: ["Action Track"]
+
     get "/action-tracks/?" do
-        raise "NOT IMPLEMENTED"
+      self.get_list(ActionTrack, params)
     end
 
-    # GET_ONE
     # GET_MANY
-    endpoint description: "Get Action Track record",
-      responses: standard_errors( 200 => "ActionTrackResponse"),
+    endpoint description: "Get ActionTrack record",
+      responses: standard_errors( 200 => "ActionTracksResponse"),
       parameters: {
-        ids: ["ID of ActionTrack", :path, true, [Integer]]
+        ids: ["ID of ActionTrack", :query, true, [Integer]]
       },
-      tags: ["Action Track"]
-    get "/action-tracks/:ids" do
-      data = (params["ids"].split(",")).map(&:to_i).map do |id|
-        ActionTrack.get!(id)
-      end
-      return json(data: data)
+      tags: ["ActionTrack"]
+    get "/action-tracks/get-many/?" do
+      self.get_one_or_many(ActionTrack, params['ids'])
+    end
+
+
+    # GET_ONE
+    endpoint description: "Get ActionTrack record",
+      responses: standard_errors( 200 => "ActionTracksResponse"),
+      parameters: {
+        id: ["ID of ActionTrack", :path, true, Integer]
+      },
+      tags: ["ActionTrack"]
+    get "/action-statuses/:id" do
+      self.get_one_or_many(ActionTrack, [params["id"]])
     end
 
     # CREATE
-    endpoint description: "Create Action Track",
+    endpoint description: "Create ActionTrack",
       responses: standard_errors( 200 => "ActionTrackResponse"),
       parameters: {
-        name: ["ActionTrack name", :body, true, String],
-        start_on: ["start on", :body, false, DateTime],
-        end_on:   ["end on", :body, false, DateTime],
-        description: ["Description", :body, false, String],
-        exec_office: ["Exec Office id", :body, false, Integer],
-        lead_agency: ["Lead Agency ID", :body, false, Integer],
-        partners: ["Partner IDs", :body, false, [Integer]],
-        agency_priority: ["Priority IDs", :body, false, [Integer]],
-        funding_sources: ["Funding Source IDs", :body, false, [Integer]],
-        shmcap_goals: ["Shmcap Goal IDs", :body, false, [Integer]],
-        primary_climate_interactions: ["Climate Interaction IDs", :body, false, [Integer]],
+        data: ["ActionTrack", :body, true, "NewActionTrack"]
       },
-      tags: ["Action Track"]
+      tags: ["ActionTrack"]
 
     post "/action-tracks/?", require_role: :curator do
-      raise "NOT IMPLEMENTED"
+      # require 'pry'; binding.pry
+      self.create(ActionTrack, params['parsed_body']['data'])
     end
 
     # UPDATE
-    endpoint description: "Update Action Track record",
-      responses: standard_errors( 200 => "ActionTrackResponse"),
+    endpoint description: "Update ActionTrack record",
+      responses: standard_errors( 200 => "ActionTracksResponse"),
       parameters: {
         id: ["ID of ActionTrack", :path, true, Integer],
         data: ["Data of ActionTrack", :body, true, "ActionTrack"]
       },
-      tags: ["Action Track"]
+      tags: ["ActionTrack"]
     put "/action-tracks/:id/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      data = params['parsed_body']['data']
+      data['id'] = params['id']
+      self.update_many(ActionTrack, [data])
     end
 
     # UPDATE_MANY
-    endpoint description: "Update Many Action Track records",
-      responses: standard_errors( 200 => "ActionTrackResponse"),
+    endpoint description: "Update Many ActionTrack records",
+      responses: standard_errors( 200 => "ActionTracksResponse"),
       parameters: {
-        ids: ["ID of ActionTrack", :body, true, [Integer]],
-        data: ["Data of ActionTrack", :body, true, "ActionTrack"]
+        data: ["Data of ActionTracks", :body, true, ["ActionTrack"]]
       },
-      tags: ["Action Track"]
+      tags: ["ActionTrack"]
     put "/action-tracks/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+        self.update_many(ActionTrack, params['parsed_body']['data'])
     end
 
     # DELETE
-    endpoint description: "Delete Action Track record",
-      responses: standard_errors( 200 => "ActionTrackResponse"),
+    endpoint description: "Delete ActionTrack record",
+      responses: standard_errors( 200 => "ActionTracksResponse"),
       parameters: {
         id: ["ID of ActionTrack", :path, true, Integer]
       },
-      tags: ["Action Track"]
+      tags: ["ActionTrack"]
     delete "/action-tracks/:id/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      self.delete_many(ActionTrack, [params['id']].compact)
     end
 
     # DELETE_MANY
-    endpoint description: "Delete MANY Action Track records",
-      responses: standard_errors( 200 => "ActionTrackResponse"),
+    endpoint description: "Delete MANY ActionTrack records",
+      responses: standard_errors( 200 => "ActionTracksResponse"),
       parameters: {
         ids: ["ID of ActionTrack", :query, true, [Integer]]
       },
-      tags: ["Action Track"]
+      tags: ["ActionTrack"]
     delete "/action-tracks/?", require_role: :curator do
-        raise "NOT IMPLEMENTED"
+      self.delete_many(ActionTrack, params['ids'])
     end
   end
 end

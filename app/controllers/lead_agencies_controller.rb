@@ -15,6 +15,12 @@ module Controllers
         id: {type: Integer, description: "ID"}
       }
     }
+    type 'NewLeadAgency', {
+      properties: {
+        name: {type: String, description: "Name of the agency"},
+        href: {type: String, description: "Href of the agency"},
+      }
+    }
 
     type 'LeadAgencyResponse', {
       properties: {
@@ -59,64 +65,75 @@ module Controllers
       self.get_list(LeadAgency, params)
     end
 
-    # GET_ONE
     # GET_MANY
     endpoint description: "Get Lead Agency record",
       responses: standard_errors( 200 => "LeadAgenciesResponse"),
       parameters: {
-        ids: ["ID of LeadAgency", :path, true, [Integer]]
+        ids: ["ID of LeadAgency", :query, true, [Integer]]
       },
       tags: ["Lead Agency"]
-    get "/lead-agencies/:ids" do
-      self.get_one_or_many(LeadAgency, params)
+    get "/lead-agencies/get-many/?" do
+      self.get_one_or_many(LeadAgency, params['ids'])
+    end
+
+
+    # GET_ONE
+    endpoint description: "Get Lead Agency record",
+      responses: standard_errors( 200 => "LeadAgenciesResponse"),
+      parameters: {
+        id: ["ID of LeadAgency", :path, true, Integer]
+      },
+      tags: ["Lead Agency"]
+    get "/action-statuses/:id" do
+      self.get_one_or_many(LeadAgency, [params["id"]])
     end
 
     # CREATE
     endpoint description: "Create Lead Agency",
       responses: standard_errors( 200 => "LeadAgencyResponse"),
       parameters: {
-        name: ["LeadAgency name", :body, true, String],
-        href: ["LeadAgency href", :body, true, String],
+        data: ["LeadAgency", :body, true, "NewLeadAgency"]
       },
       tags: ["Lead Agency"]
 
     post "/lead-agencies/?", require_role: :curator do
-      self.create(LeadAgency, params)
+      self.create(LeadAgency, params['parsed_body']['data'])
     end
 
     # UPDATE
     endpoint description: "Update Lead Agency record",
-      responses: standard_errors( 200 => "LeadAgencyResponse"),
+      responses: standard_errors( 200 => "LeadAgenciesResponse"),
       parameters: {
         id: ["ID of LeadAgency", :path, true, Integer],
         data: ["Data of LeadAgency", :body, true, "LeadAgency"]
       },
       tags: ["Lead Agency"]
     put "/lead-agencies/:id/?", require_role: :curator do
-      self.update_one(LeadAgency, params)
+      data = params['parsed_body']['data']
+      data['id'] = params['id']
+      self.update_many(LeadAgency, [data])
     end
 
     # UPDATE_MANY
     endpoint description: "Update Many Lead Agency records",
       responses: standard_errors( 200 => "LeadAgenciesResponse"),
       parameters: {
-        ids: ["ID of LeadAgency", :body, true, [Integer]],
-        data: ["Data of LeadAgency", :body, true, "LeadAgency"]
+        data: ["Data of LeadAgencies", :body, true, ["LeadAgency"]]
       },
       tags: ["Lead Agency"]
     put "/lead-agencies/?", require_role: :curator do
-      self.update_many(LeadEgency, params)
+        self.update_many(LeadAgency, params['parsed_body']['data'])
     end
 
     # DELETE
     endpoint description: "Delete Lead Agency record",
-      responses: standard_errors( 200 => "LeadAgencyResponse"),
+      responses: standard_errors( 200 => "LeadAgenciesResponse"),
       parameters: {
         id: ["ID of LeadAgency", :path, true, Integer]
       },
       tags: ["Lead Agency"]
     delete "/lead-agencies/:id/?", require_role: :curator do
-      self.delete_record(LeadAgency, params)
+      self.delete_many(LeadAgency, [params['id']].compact)
     end
 
     # DELETE_MANY
@@ -127,7 +144,8 @@ module Controllers
       },
       tags: ["Lead Agency"]
     delete "/lead-agencies/?", require_role: :curator do
-      self.delete_many(LeadAgency, params)
+      self.delete_many(LeadAgency, params['ids'])
     end
+
   end
 end

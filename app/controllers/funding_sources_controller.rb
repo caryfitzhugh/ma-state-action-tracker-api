@@ -14,6 +14,12 @@ module Controllers
         id: {type: Integer, description: "ID"}
       }
     }
+    type 'NewFundingSource', {
+      properties: {
+        name: {type: String, description: "Name of the funding source"},
+        href: {type: String, description: "Href of the funding source"},
+      }
+    }
 
     type 'FundingSourceResponse', {
       properties: {
@@ -58,64 +64,74 @@ module Controllers
       self.get_list(FundingSource, params)
     end
 
-    # GET_ONE
     # GET_MANY
     endpoint description: "Get Funding Source record",
       responses: standard_errors( 200 => "FundingSourcesResponse"),
       parameters: {
-        ids: ["ID of FundingSource", :path, true, [Integer]]
+        ids: ["ID of FundingSource", :query, true, [Integer]]
       },
       tags: ["Funding Source"]
-    get "/funding-sources/:ids" do
-      self.get_one_or_many(FundingSource, params)
+    get "/funding-sources/get-many/?" do
+      self.get_one_or_many(FundingSource, params['ids'])
+    end
+
+    # GET_ONE
+    endpoint description: "Get Funding Source record",
+      responses: standard_errors( 200 => "FundingSourcesResponse"),
+      parameters: {
+        id: ["ID of FundingSource", :path, true, Integer]
+      },
+      tags: ["Funding Source"]
+    get "/action-statuses/:id" do
+      self.get_one_or_many(FundingSource, [params["id"]])
     end
 
     # CREATE
     endpoint description: "Create Funding Source",
       responses: standard_errors( 200 => "FundingSourceResponse"),
       parameters: {
-        name: ["FundingSource name", :body, true, String],
-        href: ["FundingSource href", :body, true, String],
+        data: ["FundingSource", :body, true, "NewFundingSource"]
       },
       tags: ["Funding Source"]
 
     post "/funding-sources/?", require_role: :curator do
-      self.create(FundingSource, params)
+      self.create(FundingSource, params['parsed_body']['data'])
     end
 
     # UPDATE
     endpoint description: "Update Funding Source record",
-      responses: standard_errors( 200 => "FundingSourceResponse"),
+      responses: standard_errors( 200 => "FundingSourcesResponse"),
       parameters: {
         id: ["ID of FundingSource", :path, true, Integer],
         data: ["Data of FundingSource", :body, true, "FundingSource"]
       },
       tags: ["Funding Source"]
     put "/funding-sources/:id/?", require_role: :curator do
-      self.update_one(FundingSource, params)
+      data = params['parsed_body']['data']
+      data['id'] = params['id']
+      self.update_many(FundingSource, [data])
     end
 
     # UPDATE_MANY
     endpoint description: "Update Many Funding Source records",
       responses: standard_errors( 200 => "FundingSourcesResponse"),
       parameters: {
-        ids: ["ID of FundingSource", :body, true, [Integer]],
-        data: ["Data of FundingSource", :body, true, "FundingSource"]
+        data: ["Data of FundingSources", :body, true, ["FundingSource"]]
       },
       tags: ["Funding Source"]
     put "/funding-sources/?", require_role: :curator do
-        self.update_many(FundingSource, params)
+        self.update_many(FundingSource, params['parsed_body']['data'])
     end
 
     # DELETE
     endpoint description: "Delete Funding Source record",
-      responses: standard_errors( 200 => "FundingSourceResponse"),
+      responses: standard_errors( 200 => "FundingSourcesResponse"),
       parameters: {
         id: ["ID of FundingSource", :path, true, Integer]
       },
       tags: ["Funding Source"]
     delete "/funding-sources/:id/?", require_role: :curator do
-      self.delete_record(FundingSource, params)
+      self.delete_many(FundingSource, [params['id']].compact)
     end
 
     # DELETE_MANY
@@ -126,7 +142,7 @@ module Controllers
       },
       tags: ["Funding Source"]
     delete "/funding-sources/?", require_role: :curator do
-      self.delete_many(FundingSource, params)
+      self.delete_many(FundingSource, params['ids'])
     end
 
   end

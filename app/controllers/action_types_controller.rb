@@ -64,6 +64,18 @@ module Controllers
       self.get_list(ActionType, params)
     end
 
+    # GET_MANY
+    endpoint description: "Get Action Type record",
+      responses: standard_errors( 200 => "ActionTypesResponse"),
+      parameters: {
+        ids: ["ID of ActionType", :query, true, [Integer]]
+      },
+      tags: ["Action Type"]
+    get "/action-types/get-many/?" do
+      self.get_one_or_many(ActionType, params['ids'])
+    end
+
+
     # GET_ONE
     endpoint description: "Get Action Type record",
       responses: standard_errors( 200 => "ActionTypesResponse"),
@@ -73,17 +85,6 @@ module Controllers
       tags: ["Action Type"]
     get "/action-types/:id" do
       self.get_one_or_many(ActionType, [params["id"]])
-    end
-    #
-    # GET_MANY
-    endpoint description: "Get Action Type record",
-      responses: standard_errors( 200 => "ActionTypesResponse"),
-      parameters: {
-        ids: ["ID of ActionType", :query, true, [Integer]]
-      },
-      tags: ["Action Type"]
-    get "/action-types/by-id" do
-      self.get_one_or_many(ActionType, params['ids'])
     end
 
     # CREATE

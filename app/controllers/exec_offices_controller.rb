@@ -16,7 +16,7 @@ module Controllers
       }
     }
 
-    type 'ExecOfficeCreate', {
+    type 'NewExecOffice', {
       properties: {
         name: {type: String, description: "Name of the office"},
         href: {type: String, description: "Href of the office"},
@@ -66,64 +66,75 @@ module Controllers
       self.get_list(ExecOffice, params)
     end
 
-    # GET_ONE
     # GET_MANY
     endpoint description: "Get Exec Office record",
       responses: standard_errors( 200 => "ExecOfficesResponse"),
       parameters: {
-        ids: ["ID of ExecOffice", :path, true, [Integer]]
+        ids: ["ID of ExecOffice", :query, true, [Integer]]
       },
       tags: ["Exec Office"]
-    get "/exec-offices/:ids" do
-      self.get_one_or_many(ExecOffice, params)
+    get "/exec-offices/get-many/?" do
+      self.get_one_or_many(ExecOffice, params['ids'])
+    end
+
+
+    # GET_ONE
+    endpoint description: "Get Exec Office record",
+      responses: standard_errors( 200 => "ExecOfficesResponse"),
+      parameters: {
+        id: ["ID of ExecOffice", :path, true, Integer]
+      },
+      tags: ["Exec Office"]
+    get "/action-statuses/:id" do
+      self.get_one_or_many(ExecOffice, [params["id"]])
     end
 
     # CREATE
     endpoint description: "Create Exec Offic",
       responses: standard_errors( 200 => "ExecOfficeResponse"),
       parameters: {
-        name: ["ExecOffice name", :query, true, String],
-        href: ["ExecOffice href link", :query, false, String],
+        data: ["ExecOffice", :body, true, 'NewExecOffice'],
       },
       tags: ["Exec Office"]
 
     post "/exec-offices/?", require_role: :curator do
-      self.create(ExecOffice, params)
+      self.create(ExecOffice, params['parsed_body']['data'])
     end
 
     # UPDATE
     endpoint description: "Update Exec Office record",
-      responses: standard_errors( 200 => "ExecOfficeResponse"),
+      responses: standard_errors( 200 => "ExecOfficesResponse"),
       parameters: {
         id: ["ID of ExecOffice", :path, true, Integer],
         data: ["Data of ExecOffice", :body, true, "ExecOffice"]
       },
       tags: ["Exec Office"]
     put "/exec-offices/:id/?", require_role: :curator do
-      self.update_one(ExecOffice, params)
+      data = params['parsed_body']['data']
+      data['id'] = params['id']
+      self.update_many(ExecOffice, [data])
     end
 
     # UPDATE_MANY
     endpoint description: "Update Many Exec Office records",
       responses: standard_errors( 200 => "ExecOfficesResponse"),
       parameters: {
-        ids: ["ID of ExecOffice", :body, true, [Integer]],
-        data: ["Data of ExecOffice", :body, true, "ExecOffice"]
+        data: ["Data of ExecOffice", :body, true, ["ExecOffice"]]
       },
       tags: ["Exec Office"]
     put "/exec-offices/?", require_role: :curator do
-      self.update_many(ExecOffice, params)
+      self.update_many(ExecOffice, params['parsed_body']['data'])
     end
 
     # DELETE
     endpoint description: "Delete Exec Office record",
-      responses: standard_errors( 200 => "ExecOfficeResponse"),
+      responses: standard_errors( 200 => "ExecOfficesResponse"),
       parameters: {
         id: ["ID of ExecOffice", :path, true, Integer]
       },
       tags: ["Exec Office"]
     delete "/exec-offices/:id/?", require_role: :curator do
-      self.delete_record(ExecOffic, params)
+      self.delete_many(ExecOffic, [params['id']].compact)
     end
 
     # DELETE_MANY
@@ -134,7 +145,7 @@ module Controllers
       },
       tags: ["Exec Office"]
     delete "/exec-offices/?", require_role: :curator do
-      self.delete_many(ExecOffic, params)
+      self.delete_many(ExecOffic, params['ids'])
     end
   end
 end

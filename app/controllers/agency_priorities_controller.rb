@@ -58,63 +58,74 @@ module Controllers
       self.get_list(AgencyPriority, params)
     end
 
-    # GET_ONE
     # GET_MANY
     endpoint description: "Get Agency Priority record",
       responses: standard_errors( 200 => "AgencyPrioritiesResponse"),
       parameters: {
-        ids: ["ID of AgencyPriority", :path, true, [Integer]]
+        ids: ["ID of AgencyPriority", :query, true, [Integer]]
       },
       tags: ["Agency Priority"]
-    get "/agency-priorities/:ids" do
-      self.get_one_or_many(AgencyPriority, params)
+    get "/agency-priorities/get-many/?" do
+      self.get_one_or_many(AgencyPriority, params["ids"])
+    end
+
+    # GET_ONE
+    endpoint description: "Get Agency Priority record",
+      responses: standard_errors( 200 => "AgencyPrioritiesResponse"),
+      parameters: {
+        id: ["ID of AgencyPriority", :path, true, Integer]
+      },
+      tags: ["Agency Priority"]
+    get "/action-statuses/:id" do
+      self.get_one_or_many(AgencyPriority, [params["id"]])
     end
 
     # CREATE
     endpoint description: "Create Agency Priority",
       responses: standard_errors( 200 => "AgencyPriorityResponse"),
       parameters: {
-        name: ["AgencyPriority name", :body, true, String],
+        data: ["AgencyPriority", :body, true, 'NewActionStatus'],
       },
       tags: ["Agency Priority"]
 
     post "/agency-priorities/?", require_role: :curator do
-      self.create(AgencyPriority, params)
+      self.create(AgencyPriority, params['parsed_body']['data'])
     end
 
     # UPDATE
     endpoint description: "Update Agency Priority record",
-      responses: standard_errors( 200 => "AgencyPriorityResponse"),
+      responses: standard_errors( 200 => "AgencyPrioritiesResponse"),
       parameters: {
         id: ["ID of AgencyPriority", :path, true, Integer],
         data: ["Data of AgencyPriority", :body, true, "AgencyPriority"]
       },
       tags: ["Agency Priority"]
     put "/agency-priorities/:id/?", require_role: :curator do
-      self.update_one(AgencyPriority, params)
+      data = params['parsed_body']['data']
+      data['id'] = params['id']
+      self.update_many(AgencyPriority, [data])
     end
 
     # UPDATE_MANY
     endpoint description: "Update Many Agency Priority records",
       responses: standard_errors( 200 => "AgencyPrioritiesResponse"),
       parameters: {
-        ids: ["ID of AgencyPriority", :body, true, [Integer]],
-        data: ["Data of AgencyPriority", :body, true, "AgencyPriority"]
+        data: ["Data of AgencyPriority", :body, true, ["AgencyPriority"]]
       },
       tags: ["Agency Priority"]
     put "/agency-priorities/?", require_role: :curator do
-      self.update_many(AgencyPriority, params)
+      self.update_many(AgencyPriority, params['parsed_body']['data'])
     end
 
     # DELETE
     endpoint description: "Delete Agency Priority record",
-      responses: standard_errors( 200 => "AgencyPriorityResponse"),
+      responses: standard_errors( 200 => "AgencyPrioritiesResponse"),
       parameters: {
         id: ["ID of AgencyPriority", :path, true, Integer]
       },
       tags: ["Agency Priority"]
     delete "/agency-priorities/:id/?", require_role: :curator do
-      self.delete_record(AgencyPriority, params)
+      self.delete_many(AgencyPriority, [params['id']].compact)
     end
 
     # DELETE_MANY
@@ -125,7 +136,7 @@ module Controllers
       },
       tags: ["Agency Priority"]
     delete "/agency-priorities/?", require_role: :curator do
-      self.delete_many(AgencyPriority, params)
+      self.delete_many(AgencyPriority, params['ids'])
     end
   end
 end

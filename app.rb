@@ -17,6 +17,7 @@ require 'app/controllers/action_types_controller'
 require 'app/controllers/agency_priorities_controller'
 require 'app/controllers/exec_offices_controller'
 require 'app/controllers/funding_sources_controller'
+require 'app/controllers/global_actions_controller'
 require 'app/controllers/lead_agencies_controller'
 require 'app/controllers/partners_controller'
 require 'app/controllers/primary_climate_interactions_controller'
@@ -79,6 +80,7 @@ class App < Sinatra::Application
   use Controllers::AgencyPrioritiesController
   use Controllers::ExecOfficesController
   use Controllers::FundingSourcesController
+  use Controllers::GlobalActionsController
   use Controllers::LeadAgenciesController
   use Controllers::PartnersController
   use Controllers::PrimaryClimateInteractionsController

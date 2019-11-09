@@ -15,6 +15,13 @@ module Controllers
       }
     }
 
+    type 'NewShmcapGoal', {
+      properties: {
+        name: {type: String, description: "Name of the goal"},
+      }
+    }
+
+
     type 'ShmcapGoalResponse', {
       properties: {
         data: {type: "ShmcapGoal", description: "ShmcapGoal records"},
@@ -35,7 +42,7 @@ module Controllers
     }
 
     # GET_LIST
-    endpoint description: "Get List of Shmcap Goal records",
+    endpoint description: "Get List of ShmcapGoal records",
       responses: standard_errors( 200 => "ShmcapGoalIndexResponse"),
       parameters: {
         page: ["Page Start", :query, false, Integer, {
@@ -53,79 +60,90 @@ module Controllers
         sort_by_order: ["Field sort direction (ASC/DESC)", :query, false, String],
         filter: ["Filter to sort on {field_name: value}", :query, false, String],
       },
-      tags: ["Shmcap Goal"]
+      tags: ["ShmcapGoal"]
     get "/shmcap-goals/?" do
       self.get_list(ShmcapGoal, params)
     end
 
-    # GET_ONE
     # GET_MANY
-    endpoint description: "Get Shmcap Goal record",
-      responses: standard_errors( 200 => "ShmcapGoalsResponse"),
-      parameters: {
-        ids: ["ID of ShmcapGoal", :path, true, [Integer]]
-      },
-      tags: ["Shmcap Goal"]
-    get "/shmcap-goals/:ids" do
-      self.get_one_or_many(ShmcapGoal, params)
-    end
-
-    # CREATE
-    endpoint description: "Create Shmcap Goal",
-      responses: standard_errors( 200 => "ShmcapGoalResponse"),
-      parameters: {
-        name: ["ShmcapGoal name", :body, true, String],
-      },
-      tags: ["Shmcap Goal"]
-
-    post "/shmcap-goals/?", require_role: :curator do
-      self.create(ShmcapGoal, params)
-    end
-
-    # UPDATE
-    endpoint description: "Update Shmcap Goal record",
-      responses: standard_errors( 200 => "ShmcapGoalResponse"),
-      parameters: {
-        id: ["ID of ShmcapGoal", :path, true, Integer],
-        data: ["Data of ShmcapGoal", :body, true, "ShmcapGoal"]
-      },
-      tags: ["Shmcap Goal"]
-    put "/shmcap-goals/:id/?", require_role: :curator do
-      self.update_one(ShmcapGoal, params)
-    end
-
-    # UPDATE_MANY
-    endpoint description: "Update Many Shmcap Goal records",
-      responses: standard_errors( 200 => "ShmcapGoalsResponse"),
-      parameters: {
-        ids: ["ID of ShmcapGoal", :body, true, [Integer]],
-        data: ["Data of ShmcapGoal", :body, true, "ShmcapGoal"]
-      },
-      tags: ["Shmcap Goal"]
-    put "/shmcap-goals/?", require_role: :curator do
-      self.update_many(ShmcapGoal, params)
-    end
-
-    # DELETE
-    endpoint description: "Delete Shmcap Goal record",
-      responses: standard_errors( 200 => "ShmcapGoalResponse"),
-      parameters: {
-        id: ["ID of ShmcapGoal", :path, true, Integer]
-      },
-      tags: ["Shmcap Goal"]
-    delete "/shmcap-goals/:id/?", require_role: :curator do
-      self.delete_record(ShmcapGoal, params)
-    end
-
-    # DELETE_MANY
-    endpoint description: "Delete MANY Shmcap Goal records",
+    endpoint description: "Get ShmcapGoal record",
       responses: standard_errors( 200 => "ShmcapGoalsResponse"),
       parameters: {
         ids: ["ID of ShmcapGoal", :query, true, [Integer]]
       },
-      tags: ["Shmcap Goal"]
+      tags: ["ShmcapGoal"]
+    get "/shmcap-goals/get-many/?" do
+      self.get_one_or_many(ShmcapGoal, params['ids'])
+    end
+
+    # GET_ONE
+    endpoint description: "Get ShmcapGoal record",
+      responses: standard_errors( 200 => "ShmcapGoalsResponse"),
+      parameters: {
+        id: ["ID of ShmcapGoal", :path, true, Integer]
+      },
+      tags: ["ShmcapGoal"]
+    get "/action-statuses/:id" do
+      self.get_one_or_many(ShmcapGoal, [params["id"]])
+    end
+
+    # CREATE
+    endpoint description: "Create ShmcapGoal",
+      responses: standard_errors( 200 => "ShmcapGoalResponse"),
+      parameters: {
+        data: ["ShmcapGoal", :body, true, "NewShmcapGoal"]
+      },
+      tags: ["ShmcapGoal"]
+
+    post "/shmcap-goals/?", require_role: :curator do
+      self.create(ShmcapGoal, params['parsed_body']['data'])
+    end
+
+    # UPDATE
+    endpoint description: "Update ShmcapGoal record",
+      responses: standard_errors( 200 => "ShmcapGoalsResponse"),
+      parameters: {
+        id: ["ID of ShmcapGoal", :path, true, Integer],
+        data: ["Data of ShmcapGoal", :body, true, "ShmcapGoal"]
+      },
+      tags: ["ShmcapGoal"]
+    put "/shmcap-goals/:id/?", require_role: :curator do
+      data = params['parsed_body']['data']
+      data['id'] = params['id']
+      self.update_many(ShmcapGoal, [data])
+    end
+
+    # UPDATE_MANY
+    endpoint description: "Update Many ShmcapGoal records",
+      responses: standard_errors( 200 => "ShmcapGoalsResponse"),
+      parameters: {
+        data: ["Data of ShmcapGoals", :body, true, ["ShmcapGoal"]]
+      },
+      tags: ["ShmcapGoal"]
+    put "/shmcap-goals/?", require_role: :curator do
+        self.update_many(ShmcapGoal, params['parsed_body']['data'])
+    end
+
+    # DELETE
+    endpoint description: "Delete ShmcapGoal record",
+      responses: standard_errors( 200 => "ShmcapGoalsResponse"),
+      parameters: {
+        id: ["ID of ShmcapGoal", :path, true, Integer]
+      },
+      tags: ["ShmcapGoal"]
+    delete "/shmcap-goals/:id/?", require_role: :curator do
+      self.delete_many(ShmcapGoal, [params['id']].compact)
+    end
+
+    # DELETE_MANY
+    endpoint description: "Delete MANY ShmcapGoal records",
+      responses: standard_errors( 200 => "ShmcapGoalsResponse"),
+      parameters: {
+        ids: ["ID of ShmcapGoal", :query, true, [Integer]]
+      },
+      tags: ["ShmcapGoal"]
     delete "/shmcap-goals/?", require_role: :curator do
-      self.delete_many(ShmcapGoal, params)
+      self.delete_many(ShmcapGoal, params['ids'])
     end
   end
 end
