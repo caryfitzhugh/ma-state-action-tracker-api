@@ -68,12 +68,12 @@ module Controllers
       end
 
       order = (params["sort_by_field"] || self.class.EDITABLE_FIELDS[0]).to_sym
-      if params["sort_by_order"] == "desc"
+      if params["sort_by_order"] == "DESC"
           order = [order.desc]
-      elsif params["sort_by_order"] == "asc"
+      elsif params["sort_by_order"] == "ASC"
           order = [order.asc]
       end
-      objs = objs.all(:order => order).page(params["page"], :per_page => params["per_page"])
+      objs = objs.page(params["page"], :per_page => params["per_page"]).all(:order => order)
       json(data: objs,
            total: objs.count
           )
