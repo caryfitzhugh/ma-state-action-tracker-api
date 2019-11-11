@@ -66,11 +66,12 @@ module Controllers
     endpoint description: "Get Action Status record",
       responses: standard_errors( 200 => "ActionStatusesResponse"),
       parameters: {
-        ids: ["ID of ActionStatus", :query, true, [Integer]]
+        ids: ["ID of ActionStatus", :path, false, [Integer]]
       },
       tags: ["Action Status"]
-    get "/action-statuses/get-many/?" do
-      self.get_one_or_many(ActionStatus, params['ids'])
+    get "/action-statuses/get-many/(:ids)?" do
+      ids = [(params[:ids] || "").split(',')].flatten.compact.map(&:to_i)
+      json({:data => ids.map {|id| ActionStatus.get!(id)}})
     end
 
     # GET_ONE
@@ -81,7 +82,7 @@ module Controllers
       },
       tags: ["Action Status"]
     get "/action-statuses/:id" do
-      self.get_one_or_many(ActionStatus, [params["id"]])
+      json({:data => [ActionStatus.get!(params["id"])]})
     end
 
     # CREATE
@@ -134,11 +135,12 @@ module Controllers
     endpoint description: "Delete MANY Action Status records",
       responses: standard_errors( 200 => "ActionStatusesResponse"),
       parameters: {
-        ids: ["ID of ActionStatus", :query, true, [Integer]]
+        ids: ["ID of ActionStatus", :path, false, String]
       },
       tags: ["Action Status"]
-    delete "/action-statuses/?", require_role: :curator do
-      self.delete_many(ActionStatus, params['ids'])
+    delete "/action-statuses/:ids", require_role: :curator do
+      ids = [params[:ids].split(',')].flatten.compact.map(&:to_i)
+      self.delete_many(ActionStatus, ids)
     end
   end
 end

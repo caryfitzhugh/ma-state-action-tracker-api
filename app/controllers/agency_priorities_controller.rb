@@ -62,11 +62,12 @@ module Controllers
     endpoint description: "Get Agency Priority record",
       responses: standard_errors( 200 => "AgencyPrioritiesResponse"),
       parameters: {
-        ids: ["ID of AgencyPriority", :query, true, [Integer]]
+        ids: ["ID of AgencyPriority", :path, false, String]
       },
       tags: ["Agency Priority"]
-    get "/agency-priorities/get-many/?" do
-      self.get_one_or_many(AgencyPriority, params["ids"])
+    get "/agency-priorities/get-many/(:ids)?" do
+      ids = [(params[:ids] || "").split(',')].flatten.compact.map(&:to_i)
+      json({:data => ids.map {|id| AgencyPriority.get!(id)} })
     end
 
     # GET_ONE
@@ -77,7 +78,7 @@ module Controllers
       },
       tags: ["Agency Priority"]
     get "/action-statuses/:id" do
-      self.get_one_or_many(AgencyPriority, [params["id"]])
+      json({:data => [AgencyPriority.get!(params["id"])]})
     end
 
     # CREATE
@@ -132,11 +133,12 @@ module Controllers
     endpoint description: "Delete MANY Agency Priority records",
       responses: standard_errors( 200 => "AgencyPrioritiesResponse"),
       parameters: {
-        ids: ["ID of AgencyPriority", :query, true, [Integer]]
+        ids: ["ID of AgencyPriority", :path, false, String]
       },
       tags: ["Agency Priority"]
-    delete "/agency-priorities/?", require_role: :curator do
-      self.delete_many(AgencyPriority, params['ids'])
+    delete "/agency-priorities/:ids", require_role: :curator do
+      ids = [params[:ids].split(',')].flatten.compact.map(&:to_i)
+      self.delete_many(AgencyPriority, ids)
     end
   end
 end

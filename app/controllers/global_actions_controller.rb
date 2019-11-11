@@ -62,11 +62,12 @@ module Controllers
     endpoint description: "Get Global Action record",
       responses: standard_errors( 200 => "GlobalActionsResponse"),
       parameters: {
-        ids: ["ID of GlobalAction", :query, true, [Integer]]
+        ids: ["ID of GlobalAction", :path, false, String]
       },
       tags: ["Global Action"]
-    get "/global-actions/get-many/?" do
-      self.get_one_or_many(GlobalAction, params["ids"])
+    get "/global-actions/get-many/(:ids)?" do
+      ids = [(params[:ids] || "").split(',')].flatten.compact.map(&:to_i)
+      json({:data => ids.map {|id| GlobalAction.get!(id)}})
     end
 
 
@@ -78,7 +79,7 @@ module Controllers
       },
       tags: ["Global Action"]
     get "/action-statuses/:id" do
-      self.get_one_or_many(GlobalAction, [params["id"]])
+      json({:data => [GlobalAction.get!(params["id"])]})
     end
 
     # CREATE
@@ -133,11 +134,12 @@ module Controllers
     endpoint description: "Delete MANY Global Action records",
       responses: standard_errors( 200 => "GlobalActionsResponse"),
       parameters: {
-        ids: ["ID of GlobalAction", :query, true, [Integer]]
+        ids: ["ID of GlobalAction", :path, false, String]
       },
       tags: ["Global Action"]
-    delete "/global-actions/?", require_role: :curator do
-      self.delete_many(GlobalAction, params['ids'])
+    delete "/global-actions/:ids", require_role: :curator do
+      ids = [params[:ids].split(',')].flatten.compact.map(&:to_i)
+      self.delete_many(GlobalAction, ids)
     end
   end
 end

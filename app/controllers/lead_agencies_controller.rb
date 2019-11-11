@@ -69,11 +69,12 @@ module Controllers
     endpoint description: "Get Lead Agency record",
       responses: standard_errors( 200 => "LeadAgenciesResponse"),
       parameters: {
-        ids: ["ID of LeadAgency", :query, true, [Integer]]
+        ids: ["ID of LeadAgency", :path, false, String]
       },
       tags: ["Lead Agency"]
-    get "/lead-agencies/get-many/?" do
-      self.get_one_or_many(LeadAgency, params['ids'])
+    get "/lead-agencies/get-many/(:ids)?" do
+      ids = [(params[:ids] || "").split(',')].flatten.compact.map(&:to_i)
+      json({:data => ids.map {|id| LeadAgency.get!(id)}})
     end
 
 
@@ -85,7 +86,7 @@ module Controllers
       },
       tags: ["Lead Agency"]
     get "/action-statuses/:id" do
-      self.get_one_or_many(LeadAgency, [params["id"]])
+      json({:data => [LeadAgency.get!(params["id"])]})
     end
 
     # CREATE
@@ -140,11 +141,12 @@ module Controllers
     endpoint description: "Delete MANY Lead Agency records",
       responses: standard_errors( 200 => "LeadAgenciesResponse"),
       parameters: {
-        ids: ["ID of LeadAgency", :query, true, [Integer]]
+        ids: ["ID of LeadAgency", :path, true, String]
       },
       tags: ["Lead Agency"]
-    delete "/lead-agencies/?", require_role: :curator do
-      self.delete_many(LeadAgency, params['ids'])
+    delete "/lead-agencies/:ids", require_role: :curator do
+      ids = [params[:ids].split(',')].flatten.compact.map(&:to_i)
+      self.delete_many(LeadAgency, ids)
     end
 
   end

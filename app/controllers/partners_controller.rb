@@ -70,11 +70,12 @@ module Controllers
     endpoint description: "Get Partner record",
       responses: standard_errors( 200 => "PartnersResponse"),
       parameters: {
-        ids: ["ID of Partner", :query, true, [Integer]]
+        ids: ["ID of Partner", :path, false, String],
       },
       tags: ["Partner"]
-    get "/partners/get-many/?" do
-      self.get_one_or_many(Partner, params['ids'])
+    get "/partners/get-many/(:ids)?" do
+      ids = [(params[:ids] || "").split(',')].flatten.compact.map(&:to_i)
+      json({:data => ids.map {|id| Partner.get!(id)}})
     end
 
     # GET_ONE
@@ -85,7 +86,7 @@ module Controllers
       },
       tags: ["Partner"]
     get "/action-statuses/:id" do
-      self.get_one_or_many(Partner, [params["id"]])
+      json({:data => [Partner.get!(params["id"])]})
     end
 
     # CREATE
@@ -140,11 +141,12 @@ module Controllers
     endpoint description: "Delete MANY Partner records",
       responses: standard_errors( 200 => "PartnersResponse"),
       parameters: {
-        ids: ["ID of Partner", :query, true, [Integer]]
+        ids: ["ID of Partner", :path, true, String]
       },
       tags: ["Partner"]
-    delete "/partners/?", require_role: :curator do
-      self.delete_many(Partner, params['ids'])
+    delete "/partners/:ids", require_role: :curator do
+      ids = [params[:ids].split(',')].flatten.compact.map(&:to_i)
+      self.delete_many(Partner, ids)
     end
 
   end

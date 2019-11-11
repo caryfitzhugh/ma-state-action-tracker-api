@@ -70,11 +70,12 @@ module Controllers
     endpoint description: "Get PrimaryClimateInteraction record",
       responses: standard_errors( 200 => "PrimaryClimateInteractionsResponse"),
       parameters: {
-        ids: ["ID of PrimaryClimateInteraction", :query, true, [Integer]]
+        ids: ["ID of PrimaryClimateInteraction", :path, false, String]
       },
       tags: ["PrimaryClimateInteraction"]
-    get "/primary-climate-interactions/get-many/?" do
-      self.get_one_or_many(PrimaryClimateInteraction, params['ids'])
+    get "/primary-climate-interactions/get-many/(:ids)?" do
+      ids = [(params[:ids] || "").split(',')].flatten.compact.map(&:to_i)
+      json({:data => ids.map {|id| PrimaryClimateInteraction.get!(id)}})
     end
 
     # GET_ONE
@@ -85,7 +86,7 @@ module Controllers
       },
       tags: ["PrimaryClimateInteraction"]
     get "/action-statuses/:id" do
-      self.get_one_or_many(PrimaryClimateInteraction, [params["id"]])
+      json({:data => [PrimaryClimateInteraction.get!(params["id"])]})
     end
 
     # CREATE
@@ -140,11 +141,12 @@ module Controllers
     endpoint description: "Delete MANY PrimaryClimateInteraction records",
       responses: standard_errors( 200 => "PrimaryClimateInteractionsResponse"),
       parameters: {
-        ids: ["ID of PrimaryClimateInteraction", :query, true, [Integer]]
+        ids: ["ID of PrimaryClimateInteraction", :path, true, String]
       },
       tags: ["PrimaryClimateInteraction"]
-    delete "/primary-climate-interactions/?", require_role: :curator do
-      self.delete_many(PrimaryClimateInteraction, params['ids'])
+    delete "/primary-climate-interactions/:ids", require_role: :curator do
+      ids = [params[:ids].split(',')].flatten.compact.map(&:to_i)
+      self.delete_many(PrimaryClimateInteraction, ids)
     end
   end
 end

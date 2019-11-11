@@ -54,7 +54,11 @@ module Controllers
     def create(objs, params)
       ap = objs.create(params.slice(*self.class.EDITABLE_FIELDS))
       ap.save!
-      json(data: ap)
+      if ap.id
+        json(data: ap)
+      else
+        raise ap.errors
+      end
     end
     def get_one_or_many(objs, ids)
       data = [ids].flatten.map(&:to_i).map do |id|
@@ -126,9 +130,14 @@ module Controllers
     end
 
     def json(resp)
-      content_type :json
-      [200, JSON.generate(resp)]
+      json_str(JSON.generate(resp))
     end
+
+    def json_str(str)
+      content_type :json
+      [200, str]
+    end
+
 
   end
 end

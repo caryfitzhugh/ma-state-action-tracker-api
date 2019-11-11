@@ -70,11 +70,13 @@ module Controllers
     endpoint description: "Get Exec Office record",
       responses: standard_errors( 200 => "ExecOfficesResponse"),
       parameters: {
-        ids: ["ID of ExecOffice", :query, true, [Integer]]
+        ids: ["ID of ExecOffice", :path, false, String]
       },
       tags: ["Exec Office"]
-    get "/exec-offices/get-many/?" do
-      self.get_one_or_many(ExecOffice, params['ids'])
+    get "/exec-offices/get-many/(:ids)?" do
+      ids = [(params[:ids] || "").split(',')].flatten.compact.map(&:to_i)
+
+      json({:data => ids.map {|id| ExecOffice.get!(id)}})
     end
 
 
@@ -86,7 +88,7 @@ module Controllers
       },
       tags: ["Exec Office"]
     get "/action-statuses/:id" do
-      self.get_one_or_many(ExecOffice, [params["id"]])
+      json({:data => [ExecOffice.get!(params["id"])]})
     end
 
     # CREATE
@@ -134,18 +136,19 @@ module Controllers
       },
       tags: ["Exec Office"]
     delete "/exec-offices/:id/?", require_role: :curator do
-      self.delete_many(ExecOffic, [params['id']].compact)
+      self.delete_many(ExecOffice, [params['id']].compact)
     end
 
     # DELETE_MANY
     endpoint description: "Delete MANY Exec Office records",
       responses: standard_errors( 200 => "ExecOfficesResponse"),
       parameters: {
-        ids: ["ID of ExecOffice", :query, true, [Integer]]
+        ids: ["ID of ExecOffice", :path, false, String]
       },
       tags: ["Exec Office"]
-    delete "/exec-offices/?", require_role: :curator do
-      self.delete_many(ExecOffic, params['ids'])
+    delete "/exec-offices/:ids", require_role: :curator do
+      ids = [params[:ids].split(',')].flatten.compact.map(&:to_i)
+      self.delete_many(ExecOffice, ids)
     end
   end
 end

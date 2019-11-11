@@ -68,11 +68,12 @@ module Controllers
     endpoint description: "Get Action Type record",
       responses: standard_errors( 200 => "ActionTypesResponse"),
       parameters: {
-        ids: ["ID of ActionType", :query, true, [Integer]]
+        ids: ["ID of ActionType", :path, false, String]
       },
       tags: ["Action Type"]
-    get "/action-types/get-many/?" do
-      self.get_one_or_many(ActionType, params['ids'])
+    get "/action-types/get-many/(:ids)?" do
+      ids = [(params[:ids] || "").split(',')].flatten.compact.map(&:to_i)
+      json({:data => ids.map {|id| ActionType.get!(id)}})
     end
 
 
@@ -84,7 +85,7 @@ module Controllers
       },
       tags: ["Action Type"]
     get "/action-types/:id" do
-      self.get_one_or_many(ActionType, [params["id"]])
+      json(ActionType.get!(params["id"]))
     end
 
     # CREATE
@@ -138,10 +139,11 @@ module Controllers
     endpoint description: "Delete MANY Action Type records",
       responses: standard_errors( 200 => "ActionTypesResponse"),
       parameters: {
-        ids: ["ID of ActionType", :query, true, [Integer]]
+        ids: ["ID of ActionType", :path, false, String]
       },
       tags: ["Action Type"]
-    delete "/action-types/?", require_role: :curator do
+    delete "/action-types/:ids", require_role: :curator do
+      ids = [params[:ids].split(',')].flatten.compact.map(&:to_i)
       self.delete_many(ActionType, params['ids'])
     end
   end

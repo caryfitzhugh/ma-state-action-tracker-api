@@ -69,11 +69,12 @@ module Controllers
     endpoint description: "Get ShmcapGoal record",
       responses: standard_errors( 200 => "ShmcapGoalsResponse"),
       parameters: {
-        ids: ["ID of ShmcapGoal", :query, true, [Integer]]
+        ids: ["ID of ShmcapGoal", :path, false, String]
       },
       tags: ["ShmcapGoal"]
-    get "/shmcap-goals/get-many/?" do
-      self.get_one_or_many(ShmcapGoal, params['ids'])
+    get "/shmcap-goals/get-many/(:ids)?" do
+      ids = [(params[:ids] || "").split(',')].flatten.compact.map(&:to_i)
+      json({:data => ids.map {|id| ShmcapGoal.get!(id)}})
     end
 
     # GET_ONE
@@ -84,7 +85,7 @@ module Controllers
       },
       tags: ["ShmcapGoal"]
     get "/action-statuses/:id" do
-      self.get_one_or_many(ShmcapGoal, [params["id"]])
+      json({:data => [ShmcapGoal.get!(params["id"])]})
     end
 
     # CREATE
@@ -139,11 +140,12 @@ module Controllers
     endpoint description: "Delete MANY ShmcapGoal records",
       responses: standard_errors( 200 => "ShmcapGoalsResponse"),
       parameters: {
-        ids: ["ID of ShmcapGoal", :query, true, [Integer]]
+        ids: ["ID of ShmcapGoal", :path, true, String]
       },
       tags: ["ShmcapGoal"]
-    delete "/shmcap-goals/?", require_role: :curator do
-      self.delete_many(ShmcapGoal, params['ids'])
+    delete "/shmcap-goals/:ids", require_role: :curator do
+      ids = [params[:ids].split(',')].flatten.compact.map(&:to_i)
+      self.delete_many(ShmcapGoal, ids)
     end
   end
 end

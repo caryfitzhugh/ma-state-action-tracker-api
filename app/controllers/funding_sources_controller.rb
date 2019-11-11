@@ -68,11 +68,12 @@ module Controllers
     endpoint description: "Get Funding Source record",
       responses: standard_errors( 200 => "FundingSourcesResponse"),
       parameters: {
-        ids: ["ID of FundingSource", :query, true, [Integer]]
+        ids: ["ID of FundingSource", :path, true, String]
       },
       tags: ["Funding Source"]
-    get "/funding-sources/get-many/?" do
-      self.get_one_or_many(FundingSource, params['ids'])
+    get "/funding-sources/get-many/(:ids)?" do
+      ids = [(params[:ids] || "").split(',')].flatten.compact.map(&:to_i)
+      json({:data => ids.map {|id| FundingSource.get!(id)}})
     end
 
     # GET_ONE
@@ -83,7 +84,7 @@ module Controllers
       },
       tags: ["Funding Source"]
     get "/action-statuses/:id" do
-      self.get_one_or_many(FundingSource, [params["id"]])
+      json({:data => [FundingSource.get!(params["id"])]})
     end
 
     # CREATE
@@ -138,11 +139,12 @@ module Controllers
     endpoint description: "Delete MANY Funding Source records",
       responses: standard_errors( 200 => "FundingSourcesResponse"),
       parameters: {
-        ids: ["ID of FundingSource", :query, true, [Integer]]
+        ids: ["ID of FundingSource", :path, false, String]
       },
       tags: ["Funding Source"]
-    delete "/funding-sources/?", require_role: :curator do
-      self.delete_many(FundingSource, params['ids'])
+    delete "/funding-sources/:ids", require_role: :curator do
+      ids = [params[:ids].split(',')].flatten.compact.map(&:to_i)
+      self.delete_many(FundingSource, ids)
     end
 
   end
