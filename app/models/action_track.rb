@@ -6,9 +6,9 @@ class ActionTrack
   property :id, Serial, :key => true
 
   # Action title: unique name
-  property :title, String, :unique => true
+  property :title, String, :unique => true, :length => 255
   # Action description: unique description
-  property :description, String
+  property :description, Text
   # Completion Timeframe - unique - month/year -need start and end
   property :start_on, Date
   property :end_on, Date
