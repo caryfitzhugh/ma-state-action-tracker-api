@@ -32,6 +32,16 @@ module Controllers
       end
     end
 
+    def action_track_delete(ap)
+      ap.partners = []
+      ap.funding_sources = []
+      ap.shmcap_goals =  []
+      ap.primary_climate_interactions =  []
+      ap.progress_notes = []
+      ap.save!
+      ap.destroy!
+    end
+
     def action_track_update(ap, fields)
       ap.partners = (fields['partner_ids'] || []).map do |pid|
         Partner.get(pid)
@@ -251,7 +261,15 @@ module Controllers
       },
       tags: ["ActionTrack"]
     delete "/action-tracks/:id/?", require_role: :curator do
-      self.delete_many(ActionTrack, [params['id']].compact)
+      ats = [params["id"]].flatten.map do |id|
+        at = ActionTrack.get(id)
+        if at
+          action_track_delete(at)
+        end
+        at
+      end
+
+      json({:data => ats})
     end
 
     # DELETE_MANY
@@ -262,7 +280,14 @@ module Controllers
       },
       tags: ["ActionTrack"]
     delete "/action-tracks/?", require_role: :curator do
-      self.delete_many(ActionTrack, params['ids'])
+      ats = [params["ids"]].flatten.map do |id|
+        at = ActionTrack.get(id)
+        if at
+          action_track_delete(at)
+        end
+        at
+      end
+      json({:data => ats})
     end
   end
 end

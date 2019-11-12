@@ -21,6 +21,7 @@ require 'app/controllers/global_actions_controller'
 require 'app/controllers/lead_agencies_controller'
 require 'app/controllers/partners_controller'
 require 'app/controllers/primary_climate_interactions_controller'
+require 'app/controllers/progress_notes_controller'
 require 'app/controllers/shmcap_goals_controller'
 require 'app/controllers/users_controller'
 
@@ -84,6 +85,7 @@ class App < Sinatra::Application
   use Controllers::LeadAgenciesController
   use Controllers::PartnersController
   use Controllers::PrimaryClimateInteractionsController
+  use Controllers::ProgressNotesController
   use Controllers::ShmcapGoalsController
   use Controllers::UsersController
 

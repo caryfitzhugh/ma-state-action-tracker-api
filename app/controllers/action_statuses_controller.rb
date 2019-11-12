@@ -104,7 +104,7 @@ module Controllers
         data: ["ActionStatus", :body, true, 'ActionStatus'],
       },
       tags: ["Action Status"]
-    put "/action-statuses/:id?", require_role: :curator do
+    put "/action-statuses/:id", require_role: :curator do
       data = params['parsed_body']['data']
       data['id'] = params['id']
       self.update_many(ActionStatus, [data])
