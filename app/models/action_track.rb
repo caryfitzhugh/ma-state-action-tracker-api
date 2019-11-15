@@ -1,5 +1,6 @@
 require 'ostruct'
 require 'dm-postgis'
+require 'lib/ilike'
 
 class ActionTrack
   include DataMapper::Resource

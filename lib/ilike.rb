@@ -91,3 +91,18 @@ class Symbol
     DataMapper::Query::Operator.new(self, :similar)
   end
 end # class Symbol
+module DataMapper
+  class Query
+    class Path
+      def ilike
+        Operator.new(self, :ilike)
+      end
+    end
+  end
+end
+module DataMapper
+  class Property
+    class String
+    end
+  end
+end

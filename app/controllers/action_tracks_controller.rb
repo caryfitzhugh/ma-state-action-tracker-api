@@ -138,11 +138,46 @@ module Controllers
         sort_by_field: ["Field to sort on", :query, false, String],
         sort_by_order: ["Field sort direction (ASC/DESC)", :query, false, String],
         filter: ["Filter to sort on {field_name: value}", :query, false, String],
+        query: ["Query string to search with", :query, false, String]
       },
       tags: ["Action Track"]
 
     get "/action-tracks/?" do
-      self.get_list(ActionTrack, params)
+      objs = ActionTrack.all
+      JSON.parse(params["filter"] || "{}").each do |field, value|
+        objs = objs.all(field => value)
+      end
+
+      order = (params["sort_by_field"] || self.class.EDITABLE_FIELDS[0]).to_sym
+      if params["sort_by_order"] == "DESC"
+          order = [order.desc]
+      elsif params["sort_by_order"] == "ASC"
+          order = [order.asc]
+      end
+      objs = objs.page(params["page"], :per_page => params["per_page"]).all(:order => order)
+
+      if params["query"]
+        q = "%" + params['query'] + "%"
+
+        objs =
+          objs.all(:title.ilike => q) |
+          objs.all(:description.ilike => q) |
+          objs.all(ActionTrack.action_type.type.ilike => q) |
+          objs.all(ActionTrack.action_status.status.ilike => q) |
+          objs.all(ActionTrack.exec_office.name.ilike => q) |
+          objs.all(ActionTrack.lead_agency.name.ilike => q) |
+          objs.all(ActionTrack.agency_priority.name.ilike => q) |
+          objs.all(ActionTrack.global_action.action.ilike => q) |
+          objs.all(ActionTrack.partners.name.ilike => q) |
+          objs.all(ActionTrack.partners.href.ilike => q) |
+          objs.all(ActionTrack.funding_sources.name.ilike => q) |
+          objs.all(ActionTrack.funding_sources.href.ilike => q) |
+          objs.all(ActionTrack.primary_climate_interactions.name.ilike => q)
+      end
+
+      json(data: objs,
+           total: objs.count
+          )
     end
 
     # GET_MANY
