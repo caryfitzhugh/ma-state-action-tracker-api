@@ -15,6 +15,7 @@ require 'app/controllers/authentication_controller'
 require 'app/controllers/action_statuses_controller'
 require 'app/controllers/action_types_controller'
 require 'app/controllers/agency_priorities_controller'
+require 'app/controllers/completion_timeframes_controller'
 require 'app/controllers/exec_offices_controller'
 require 'app/controllers/funding_sources_controller'
 require 'app/controllers/global_actions_controller'
@@ -79,6 +80,7 @@ class App < Sinatra::Application
   use Controllers::ActionStatusesController
   use Controllers::ActionTracksController
   use Controllers::AgencyPrioritiesController
+  use Controllers::CompletionTimeframesController
   use Controllers::ExecOfficesController
   use Controllers::FundingSourcesController
   use Controllers::GlobalActionsController

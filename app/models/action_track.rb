@@ -8,9 +8,8 @@ class ActionTrack
   property :title, String, :unique => true, :length => 255
   # Action description: unique description
   property :description, Text
-  # Completion Timeframe - unique - month/year -need start and end
-  property :start_on, Date
-  property :end_on, Date
+
+  belongs_to :completion_timeframe, CompletionTimeframe, :required => false
 
   # Action Status - drop down
   belongs_to :action_status, ActionStatus, :required => false

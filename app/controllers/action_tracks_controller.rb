@@ -6,9 +6,8 @@ module Controllers
   class ActionTracksController < Controllers::Base
     def self.EDITABLE_FIELDS
       ["title",
-       "start_on",
-       "end_on",
        "description",
+       "completion_timeframe_id",
        "action_status_id",
        "exec_office_id",
        "lead_agency_id",
