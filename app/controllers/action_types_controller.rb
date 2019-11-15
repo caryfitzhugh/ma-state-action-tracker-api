@@ -87,7 +87,7 @@ module Controllers
       },
       tags: ["Action Type"]
     get "/action-types/:id" do
-      json(ActionType.get!(params["id"]))
+      json({:data => [ActionType.get!(params["id"])]})
     end
 
     # CREATE

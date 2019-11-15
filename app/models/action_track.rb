@@ -12,8 +12,6 @@ class ActionTrack
   property :start_on, Date
   property :end_on, Date
 
-  # Action Type - drop down
-  belongs_to :action_type, ActionType, :required => false
   # Action Status - drop down
   belongs_to :action_status, ActionStatus, :required => false
   # Executive Office - drop down
@@ -28,6 +26,8 @@ class ActionTrack
   # Progress Notes
   has n, :progress_notes, ProgressNote
 
+  # Action Type - drop down
+  has n, :action_types, ActionType, :through => :action_track_action_type
   # Partner(s) - unique fill ahead
   has n, :partners, Partner, :through => :action_track_partner
   # Possible Funding Source(s) - unique - fill ahead

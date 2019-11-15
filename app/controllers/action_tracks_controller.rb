@@ -9,7 +9,6 @@ module Controllers
        "start_on",
        "end_on",
        "description",
-       "action_type_id",
        "action_status_id",
        "exec_office_id",
        "lead_agency_id",
@@ -21,6 +20,7 @@ module Controllers
     def action_track_obj(ap)
       if ap
         JSON.load(ap.to_json).tap do |o|
+          o[:action_type_ids] = ap.action_types.map(&:id)
           o[:partner_ids] = ap.partners.map(&:id)
           o[:funding_source_ids] = ap.funding_sources.map(&:id)
           o[:shmcap_goal_ids] = ap.shmcap_goals.map(&:id)
@@ -38,11 +38,16 @@ module Controllers
       ap.shmcap_goals =  []
       ap.primary_climate_interactions =  []
       ap.progress_notes = []
+      ap.action_types = []
       ap.save!
       ap.destroy!
     end
 
     def action_track_update(ap, fields)
+      ap.action_types = (fields['action_type_ids'] || []).map do |atid|
+        ActionType.get(atid)
+      end
+
       ap.partners = (fields['partner_ids'] || []).map do |pid|
         Partner.get(pid)
       end
@@ -68,12 +73,12 @@ module Controllers
         :start_on => {type: String, example: "2017-01-31"},
         :end_on => {type: String, example: "2017-01-31"},
 
-        :action_type_id => {type: Integer, description: "Action Type ID"},
         :action_status_id => {type: Integer, description: "Action Status ID"},
         :exec_office_id => {type: Integer, description: "Exec Office ID"},
         :lead_agency_id => {type: Integer, description: "Lead Agency ID"},
         :agency_priority_id => {type: Integer, description: "Agency priority ID"},
         :global_action_id => {type: Integer, description: "Global action ID"},
+        :action_type_ids => {type: [Integer], description: "Action Type IDs"},
         :partner_ids => {type: [Integer], description: "Partners ids"},
         :funding_source_ids => {type: [Integer], description: "Funding Source IDs"},
         :shmcap_goal_ids => {type: [Integer], description: "SHMCAP Goal IDs"},
@@ -88,12 +93,12 @@ module Controllers
         :start_on => {type: String, example: "2017-01-31"},
         :end_on => {type: String, example: "2017-01-31"},
 
-        :action_type_id => {type: Integer, description: "Action Type ID"},
         :action_status_id => {type: Integer, description: "Action Status ID"},
         :exec_office_id => {type: Integer, description: "Exec Office ID"},
         :lead_agency_id => {type: Integer, description: "Lead Agency ID"},
         :agency_priority_id => {type: Integer, description: "Agency priority ID"},
         :global_action_id => {type: Integer, description: "Global action ID"},
+        :action_type_ids => {type: [Integer], description: "Action Type IDs"},
         :partner_ids => {type: [Integer], description: "Partners ids"},
         :funding_source_ids => {type: [Integer], description: "Funding Source IDs"},
         :shmcap_goal_ids => {type: [Integer], description: "SHMCAP Goal IDs"},
@@ -162,7 +167,7 @@ module Controllers
         objs =
           objs.all(:title.ilike => q) |
           objs.all(:description.ilike => q) |
-          objs.all(ActionTrack.action_type.type.ilike => q) |
+          objs.all(ActionTrack.action_types.type.ilike => q) |
           objs.all(ActionTrack.action_status.status.ilike => q) |
           objs.all(ActionTrack.exec_office.name.ilike => q) |
           objs.all(ActionTrack.lead_agency.name.ilike => q) |

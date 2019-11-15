@@ -25,6 +25,7 @@ end
 # Requires ActionTrack
 require 'app/models/progress_note'
 
+require 'app/models/action_track_action_type'
 require 'app/models/action_track_funding_source'
 require 'app/models/action_track_partner'
 require 'app/models/action_track_primary_climate_interaction'
