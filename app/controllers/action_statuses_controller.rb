@@ -5,18 +5,21 @@ require 'uri'
 module Controllers
   class ActionStatusesController < Controllers::Base
     def self.EDITABLE_FIELDS
-      ['status']
+      ['status', 'description']
     end
 
     type 'ActionStatus', {
       properties: {
         status: {type: String, description: "Name of the status"},
+        description: {type: String, description: "Tooltip info"},
         id: {type: Integer, description: "ID"}
+
       }
     }
     type 'NewActionStatus', {
       properties: {
         status: {type: String, description: "Name of the status"},
+        description: {type: String, description: "Tooltip info"},
       }
     }
     type 'ActionStatusesResponse', {
@@ -71,7 +74,7 @@ module Controllers
       tags: ["Action Status"]
     get "/action-statuses/get-many/(:ids)?" do
       ids = [(params[:ids] || "").split(',')].flatten.compact.map(&:to_i)
-      json({:data => ids.map {|id| ActionStatus.get!(id)}})
+      json({:data => ids.map {|id| ActionStatus.get(id)}.compact})
     end
 
     # GET_ONE

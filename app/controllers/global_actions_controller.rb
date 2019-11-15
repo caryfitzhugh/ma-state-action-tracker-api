@@ -5,16 +5,23 @@ require 'uri'
 module Controllers
   class GlobalActionsController < Controllers::Base
     def self.EDITABLE_FIELDS
-      ['action']
+      ['action', 'description']
     end
 
     type 'GlobalAction', {
       properties: {
         action: {type: String, description: "Name of the priority"},
+        description: {type: String, description: "Tooltip info"},
         id: {type: Integer, description: "ID"}
       }
     }
 
+    type 'NewGlobalAction', {
+      properties: {
+        action: {type: String, description: "Name of the priority"},
+        description: {type: String, description: "Tooltip info"},
+      }
+    }
     type 'GlobalActionsResponse', {
       properties: {
         data: {type: ["GlobalAction"], description: "GlobalAction records"},
@@ -67,7 +74,7 @@ module Controllers
       tags: ["Global Action"]
     get "/global-actions/get-many/(:ids)?" do
       ids = [(params[:ids] || "").split(',')].flatten.compact.map(&:to_i)
-      json({:data => ids.map {|id| GlobalAction.get!(id)}})
+      json({:data => ids.map {|id| GlobalAction.get(id)}.compact})
     end
 
 
@@ -78,7 +85,7 @@ module Controllers
         id: ["ID of GlobalAction", :path, true, Integer]
       },
       tags: ["Global Action"]
-    get "/action-statuses/:id" do
+    get "/global-actions/:id" do
       json({:data => [GlobalAction.get!(params["id"])]})
     end
 
@@ -86,7 +93,7 @@ module Controllers
     endpoint description: "Create Global Action",
       responses: standard_errors( 200 => "GlobalActionResponse"),
       parameters: {
-        data: ["GlobalAction", :body, true, 'NewActionStatus'],
+        data: ["GlobalAction", :body, true, 'NewGlobalAction'],
       },
       tags: ["Global Action"]
 

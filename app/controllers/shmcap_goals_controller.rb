@@ -5,12 +5,13 @@ require 'uri'
 module Controllers
   class ShmcapGoalsController < Controllers::Base
     def self.EDITABLE_FIELDS
-      ["name"]
+      ["name", 'description']
     end
 
     type 'ShmcapGoal', {
       properties: {
         name: {type: String, description: "Name of the goal"},
+        description: {type: String, description: "Tooltip info"},
         id: {type: Integer, description: "ID"}
       }
     }
@@ -18,6 +19,7 @@ module Controllers
     type 'NewShmcapGoal', {
       properties: {
         name: {type: String, description: "Name of the goal"},
+        description: {type: String, description: "Tooltip info"},
       }
     }
 
@@ -74,7 +76,7 @@ module Controllers
       tags: ["ShmcapGoal"]
     get "/shmcap-goals/get-many/(:ids)?" do
       ids = [(params[:ids] || "").split(',')].flatten.compact.map(&:to_i)
-      json({:data => ids.map {|id| ShmcapGoal.get!(id)}})
+      json({:data => ids.map {|id| ShmcapGoal.get(id)}.compact})
     end
 
     # GET_ONE
@@ -84,7 +86,7 @@ module Controllers
         id: ["ID of ShmcapGoal", :path, true, Integer]
       },
       tags: ["ShmcapGoal"]
-    get "/action-statuses/:id" do
+    get "/shmcap-goals/:id" do
       json({:data => [ShmcapGoal.get!(params["id"])]})
     end
 

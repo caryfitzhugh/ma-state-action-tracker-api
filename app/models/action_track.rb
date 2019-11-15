@@ -1,6 +1,4 @@
-require 'ostruct'
 require 'dm-postgis'
-require 'lib/ilike'
 
 class ActionTrack
   include DataMapper::Resource
@@ -40,50 +38,4 @@ class ActionTrack
   has n, :primary_climate_interactions, PrimaryClimateInteraction, :through => :action_track_primary_climate_interaction
 
   validates_primitive_type_of :start_on, :end_on
-
-  def self.search(
-             page: 1,
-             per_page: 50,
-             start_on_range: [],
-             end_on_range: [],
-             title_like: nil,
-             description_like: nil,
-             executive_offices: [],
-             lead_agencies: [],
-             partners: [],
-             agency_priorities: [],
-             funding_sources: [],
-             shmcap_goals: [],
-             primary_climate_interactions: [])
-
-    # require 'pry'
-    # binding.pry
-
-    # results = self.all(:limit => per_page, :offset => per_page * (page - 1))
-    # if start_on_range[0] && start_on_range[1]
-    #     results = results.all(:start_on => start_on_range[0] .. start_on_range[1])
-    # else if start_on_range[0]
-    #     results = results.all(:start_on.gt => start_on_range[0])
-    # else if start_on_range[1]
-    #     results = results.all(:start_on.lt => start_on_range[1])
-    # end
-
-    # if end_on_range[0] && end_on_range[1]
-    #     results = results.all(:end_on => end_on_range[0] .. end_on_range[1])
-    # else if end_on_range[0]
-    #     results = results.all(:end_on.gt => end_on_range[0])
-    # else if end_on_range[1]
-    #     results = results.all(:end_on.lt => end_on_range[1])
-    # end
-
-
-
-    total_count = results.count
-
-
-    OpenStruct.new({
-      :results => results,
-      :total => total_count
-    })
-  end
 end

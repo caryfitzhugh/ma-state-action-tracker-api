@@ -5,13 +5,14 @@ require 'uri'
 module Controllers
   class PartnersController < Controllers::Base
     def self.EDITABLE_FIELDS
-      ['name', 'href']
+      ['name', 'href', 'description']
     end
 
     type 'Partner', {
       properties: {
         name: {type: String, description: "Name of the partner"},
         href: {type: String, description: "Href of the partner"},
+        description: {type: String, description: "Tooltip info"},
         id: {type: Integer, description: "ID"}
       }
     }
@@ -20,6 +21,7 @@ module Controllers
       properties: {
         name: {type: String, description: "Name of the partner"},
         href: {type: String, description: "Href of the partner"},
+        description: {type: String, description: "Tooltip info"},
       }
     }
 
@@ -75,7 +77,7 @@ module Controllers
       tags: ["Partner"]
     get "/partners/get-many/(:ids)?" do
       ids = [(params[:ids] || "").split(',')].flatten.compact.map(&:to_i)
-      json({:data => ids.map {|id| Partner.get!(id)}})
+      json({:data => ids.map {|id| Partner.get(id)}.compact})
     end
 
     # GET_ONE
@@ -85,7 +87,7 @@ module Controllers
         id: ["ID of Partner", :path, true, Integer]
       },
       tags: ["Partner"]
-    get "/action-statuses/:id" do
+    get "/partners/:id" do
       json({:data => [Partner.get!(params["id"])]})
     end
 

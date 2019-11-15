@@ -5,12 +5,13 @@ require 'uri'
 module Controllers
   class FundingSourcesController < Controllers::Base
     def self.EDITABLE_FIELDS
-      ["name", "href"]
+      ["name", "href", 'description']
     end
     type 'FundingSource', {
       properties: {
         name: {type: String, description: "Name of the funding source"},
         href: {type: String, description: "Href of the funding source"},
+        description: {type: String, description: "Tooltip info"},
         id: {type: Integer, description: "ID"}
       }
     }
@@ -18,6 +19,7 @@ module Controllers
       properties: {
         name: {type: String, description: "Name of the funding source"},
         href: {type: String, description: "Href of the funding source"},
+        description: {type: String, description: "Tooltip info"},
       }
     }
 
@@ -73,7 +75,7 @@ module Controllers
       tags: ["Funding Source"]
     get "/funding-sources/get-many/(:ids)?" do
       ids = [(params[:ids] || "").split(',')].flatten.compact.map(&:to_i)
-      json({:data => ids.map {|id| FundingSource.get!(id)}})
+      json({:data => ids.map {|id| FundingSource.get(id)}.compact})
     end
 
     # GET_ONE
@@ -83,7 +85,7 @@ module Controllers
         id: ["ID of FundingSource", :path, true, Integer]
       },
       tags: ["Funding Source"]
-    get "/action-statuses/:id" do
+    get "/funding-sources/:id" do
       json({:data => [FundingSource.get!(params["id"])]})
     end
 

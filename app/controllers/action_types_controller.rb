@@ -5,18 +5,20 @@ require 'uri'
 module Controllers
   class ActionTypesController < Controllers::Base
     def self.EDITABLE_FIELDS
-      ['type']
+      ['type', 'description']
     end
 
     type 'ActionType', {
       properties: {
         type: {type: String, description: "Name of the priority"},
+        description: {type: String, description: "Tooltip info"},
         id: {type: Integer, description: "ID"}
       }
     }
 
     type 'NewActionType', {
       properties: {
+        description: {type: String, description: "Tooltip info"},
         type: {type: String, description: "Name of the priority"}
       }
     }
@@ -73,7 +75,7 @@ module Controllers
       tags: ["Action Type"]
     get "/action-types/get-many/(:ids)?" do
       ids = [(params[:ids] || "").split(',')].flatten.compact.map(&:to_i)
-      json({:data => ids.map {|id| ActionType.get!(id)}})
+      json({:data => ids.map {|id| ActionType.get(id)}.compact})
     end
 
 

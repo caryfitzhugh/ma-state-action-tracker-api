@@ -5,13 +5,14 @@ require 'uri'
 module Controllers
   class LeadAgenciesController < Controllers::Base
     def self.EDITABLE_FIELDS
-      ['name', 'href']
+      ['name', 'href', 'description']
     end
 
     type 'LeadAgency', {
       properties: {
         name: {type: String, description: "Name of the agency"},
         href: {type: String, description: "Href of the agency"},
+        description: {type: String, description: "Tooltip info"},
         id: {type: Integer, description: "ID"}
       }
     }
@@ -19,6 +20,7 @@ module Controllers
       properties: {
         name: {type: String, description: "Name of the agency"},
         href: {type: String, description: "Href of the agency"},
+        description: {type: String, description: "Tooltip info"},
       }
     }
 
@@ -74,7 +76,7 @@ module Controllers
       tags: ["Lead Agency"]
     get "/lead-agencies/get-many/(:ids)?" do
       ids = [(params[:ids] || "").split(',')].flatten.compact.map(&:to_i)
-      json({:data => ids.map {|id| LeadAgency.get!(id)}})
+      json({:data => ids.map {|id| LeadAgency.get(id)}.compact})
     end
 
 
@@ -85,7 +87,7 @@ module Controllers
         id: ["ID of LeadAgency", :path, true, Integer]
       },
       tags: ["Lead Agency"]
-    get "/action-statuses/:id" do
+    get "/lead-agencies/:id" do
       json({:data => [LeadAgency.get!(params["id"])]})
     end
 

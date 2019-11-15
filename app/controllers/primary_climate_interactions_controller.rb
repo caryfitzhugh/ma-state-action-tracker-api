@@ -5,12 +5,13 @@ require 'uri'
 module Controllers
   class PrimaryClimateInteractionsController < Controllers::Base
     def self.EDITABLE_FIELDS
-      ["name"]
+      ["name", 'description']
     end
 
     type 'PrimaryClimateInteraction', {
       properties: {
         name: {type: String, description: "Name of the interaction"},
+        description: {type: String, description: "Tooltip info"},
         id: {type: Integer, description: "ID"}
       }
     }
@@ -18,6 +19,7 @@ module Controllers
     type 'NewPrimaryClimateInteraction', {
       properties: {
         name: {type: String, description: "Name of the interaction"},
+        description: {type: String, description: "Tooltip info"},
       }
     }
 
@@ -75,7 +77,7 @@ module Controllers
       tags: ["PrimaryClimateInteraction"]
     get "/primary-climate-interactions/get-many/(:ids)?" do
       ids = [(params[:ids] || "").split(',')].flatten.compact.map(&:to_i)
-      json({:data => ids.map {|id| PrimaryClimateInteraction.get!(id)}})
+      json({:data => ids.map {|id| PrimaryClimateInteraction.get(id)}.compact})
     end
 
     # GET_ONE
@@ -85,7 +87,7 @@ module Controllers
         id: ["ID of PrimaryClimateInteraction", :path, true, Integer]
       },
       tags: ["PrimaryClimateInteraction"]
-    get "/action-statuses/:id" do
+    get "/primary-climate-interactions/:id" do
       json({:data => [PrimaryClimateInteraction.get!(params["id"])]})
     end
 

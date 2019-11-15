@@ -5,13 +5,21 @@ require 'uri'
 module Controllers
   class AgencyPrioritiesController < Controllers::Base
     def self.EDITABLE_FIELDS
-      ['name']
+      ['name', 'description']
     end
 
     type 'AgencyPriority', {
       properties: {
         name: {type: String, description: "Name of the priority"},
+        description: {type: String, description: "Tooltip info"},
         id: {type: Integer, description: "ID"}
+      }
+    }
+
+    type 'NewAgencyPriority', {
+      properties: {
+        name: {type: String, description: "Name of the priority"},
+        description: {type: String, description: "Tooltip info"}
       }
     }
 
@@ -67,7 +75,7 @@ module Controllers
       tags: ["Agency Priority"]
     get "/agency-priorities/get-many/(:ids)?" do
       ids = [(params[:ids] || "").split(',')].flatten.compact.map(&:to_i)
-      json({:data => ids.map {|id| AgencyPriority.get!(id)} })
+      json({:data => ids.map {|id| AgencyPriority.get(id)}.compact})
     end
 
     # GET_ONE
@@ -77,7 +85,7 @@ module Controllers
         id: ["ID of AgencyPriority", :path, true, Integer]
       },
       tags: ["Agency Priority"]
-    get "/action-statuses/:id" do
+    get "/agency-priorities/:id" do
       json({:data => [AgencyPriority.get!(params["id"])]})
     end
 
@@ -85,7 +93,7 @@ module Controllers
     endpoint description: "Create Agency Priority",
       responses: standard_errors( 200 => "AgencyPriorityResponse"),
       parameters: {
-        data: ["AgencyPriority", :body, true, 'NewActionStatus'],
+        data: ["AgencyPriority", :body, true, 'NewAgencyPriority'],
       },
       tags: ["Agency Priority"]
 

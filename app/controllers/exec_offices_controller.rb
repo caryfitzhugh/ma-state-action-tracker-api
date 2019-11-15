@@ -5,13 +5,14 @@ require 'uri'
 module Controllers
   class ExecOfficesController < Controllers::Base
     def self.EDITABLE_FIELDS
-      ["name", "href"]
+      ["name", "href", 'description']
     end
 
     type 'ExecOffice', {
       properties: {
         name: {type: String, description: "Name of the office"},
         href: {type: String, description: "Href of the office"},
+        description: {type: String, description: "Tooltip info"},
         id: {type: Integer, description: "ID"}
       }
     }
@@ -20,6 +21,7 @@ module Controllers
       properties: {
         name: {type: String, description: "Name of the office"},
         href: {type: String, description: "Href of the office"},
+        description: {type: String, description: "Tooltip info"},
       }
     }
 
@@ -76,7 +78,7 @@ module Controllers
     get "/exec-offices/get-many/(:ids)?" do
       ids = [(params[:ids] || "").split(',')].flatten.compact.map(&:to_i)
 
-      json({:data => ids.map {|id| ExecOffice.get!(id)}})
+      json({:data => ids.map {|id| ExecOffice.get(id)}.compact})
     end
 
 
@@ -87,7 +89,7 @@ module Controllers
         id: ["ID of ExecOffice", :path, true, Integer]
       },
       tags: ["Exec Office"]
-    get "/action-statuses/:id" do
+    get "/exec-offices/:id" do
       json({:data => [ExecOffice.get!(params["id"])]})
     end
 
