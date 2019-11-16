@@ -136,7 +136,7 @@ module Controllers
         per_page: ["Records per page", :query, false, Integer, {
                 minimum: 1,
                 default: 20,
-                maximum: 50,
+                maximum: 10000,
                 example: 10
               }],
         sort_by_field: ["Field to sort on", :query, false, String],
@@ -181,6 +181,7 @@ module Controllers
           objs.all(ActionTrack.exec_office.name.ilike => q) |
           objs.all(ActionTrack.lead_agency.name.ilike => q) |
           objs.all(ActionTrack.agency_priority.name.ilike => q) |
+          objs.all(ActionTrack.progress_notes.note.ilike => q) |
           objs.all(ActionTrack.global_action.action.ilike => q) |
           objs.all(ActionTrack.partners.name.ilike => q) |
           objs.all(ActionTrack.partners.href.ilike => q) |
