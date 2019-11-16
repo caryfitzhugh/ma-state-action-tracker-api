@@ -160,11 +160,13 @@ module Controllers
       end
 
       order = (params["sort_by_field"] || self.class.EDITABLE_FIELDS[0]).to_sym
-      if params["sort_by_order"] == "DESC"
-          order = [order.desc]
-      elsif params["sort_by_order"] == "ASC"
-          order = [order.asc]
+      # Can only order on a few fields
+      if order == :title
+        order = [order.send(params["sort_by_order"].downcase.to_sym)]
+      elsif order == :description
+        order = [order.send(params["sort_by_order"].downcase.to_sym)]
       end
+
       objs = objs.page(params["page"], :per_page => params["per_page"]).all(:order => order)
 
       if params["query"]

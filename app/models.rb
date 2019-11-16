@@ -35,7 +35,7 @@ require 'app/models/action_track_shmcap_goal'
 require 'app/models/action_track'
 
 DataMapper.finalize
-DataMapper::Logger.new($stdout, :info)
+DataMapper::Logger.new($stdout, :debug)
 if CONFIG.postgres
   connected = false
   while !connected
