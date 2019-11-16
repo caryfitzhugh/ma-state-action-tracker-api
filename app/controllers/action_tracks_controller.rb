@@ -148,8 +148,15 @@ module Controllers
 
     get "/action-tracks/?" do
       objs = ActionTrack.all
+
       JSON.parse(params["filter"] || "{}").each do |field, value|
-        objs = objs.all(field => value)
+        if field == "shmcap_goal_ids"
+          objs = objs.all(ActionTrack.shmcap_goals.id => value)
+        elsif field == 'action_type_ids'
+          objs = objs.all(ActionTrack.action_types.id => value)
+        else
+          objs = objs.all(field => value)
+        end
       end
 
       order = (params["sort_by_field"] || self.class.EDITABLE_FIELDS[0]).to_sym
@@ -168,6 +175,7 @@ module Controllers
           objs.all(:description.ilike => q) |
           objs.all(ActionTrack.action_types.type.ilike => q) |
           objs.all(ActionTrack.action_status.status.ilike => q) |
+          objs.all(ActionTrack.completion_timeframe.timeframe.ilike => q) |
           objs.all(ActionTrack.exec_office.name.ilike => q) |
           objs.all(ActionTrack.lead_agency.name.ilike => q) |
           objs.all(ActionTrack.agency_priority.name.ilike => q) |
@@ -179,7 +187,7 @@ module Controllers
           objs.all(ActionTrack.primary_climate_interactions.name.ilike => q)
       end
 
-      json(data: objs,
+      json(data: objs.map {|o| action_track_obj(o) },
            total: objs.count
           )
     end
