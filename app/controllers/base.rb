@@ -44,7 +44,7 @@ module Controllers
         ap.destroy!
         ap
       end
-      json(data: data)
+      json(data: [])
     end
     def update_many(klass, records)
       data = records.map do |record|
