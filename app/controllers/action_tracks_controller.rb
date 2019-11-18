@@ -211,9 +211,6 @@ module Controllers
         # Do a normal query
         objs = query(params)
       end
-      require 'pry'
-      binding.pry
-
       json(objs)
     end
 
