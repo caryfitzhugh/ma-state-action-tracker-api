@@ -11,6 +11,7 @@ require 'sinatra/cross_origin'
 require 'sinatra/swagger-exposer/swagger-exposer'
 
 
+require 'app/controllers/audit_trails_controller'
 require 'app/controllers/authentication_controller'
 require 'app/controllers/action_statuses_controller'
 require 'app/controllers/action_types_controller'
@@ -76,6 +77,7 @@ class App < Sinatra::Application
 
   use Controllers::AuthenticationController
 
+  use Controllers::AuditTrailsController
   use Controllers::ActionTypesController
   use Controllers::ActionStatusesController
   use Controllers::ActionTracksController

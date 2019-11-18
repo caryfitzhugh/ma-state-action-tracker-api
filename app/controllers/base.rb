@@ -34,6 +34,10 @@ module Controllers
     enable :cross_origin
   end
 
+  before do
+    Thread.current[:user_id] = current_user.id rescue nil
+  end
+
     def delete_many(klass, ids)
       data = [ids].flatten.map do |id|
         ap = klass.get!(id)

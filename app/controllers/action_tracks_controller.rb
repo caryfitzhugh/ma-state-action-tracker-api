@@ -124,6 +124,55 @@ module Controllers
       }
     }
 
+    def query(params)
+      objs = ActionTrack.all
+        JSON.parse(params["filter"] || "{}").each do |field, value|
+          if field == "shmcap_goal_ids"
+            objs = objs.all(ActionTrack.shmcap_goals.id => value)
+          elsif field == 'action_type_ids'
+            objs = objs.all(ActionTrack.action_types.id => value)
+          else
+            objs = objs.all(field => value)
+          end
+        end
+
+        order = (params["sort_by_field"] || self.class.EDITABLE_FIELDS[0]).to_sym
+        # Can only order on a few fields
+        if order == :title
+          order = [order.send(params["sort_by_order"].downcase.to_sym)]
+        elsif order == :description
+          order = [order.send(params["sort_by_order"].downcase.to_sym)]
+        end
+
+        if params["query"]
+          q = "%" + params['query'] + "%"
+
+          objs =
+            objs.all(:title.ilike => q) |
+            objs.all(:description.ilike => q) |
+            objs.all(ActionTrack.action_types.type.ilike => q) |
+            objs.all(ActionTrack.action_status.status.ilike => q) |
+            objs.all(ActionTrack.completion_timeframe.timeframe.ilike => q) |
+            objs.all(ActionTrack.exec_office.name.ilike => q) |
+            objs.all(ActionTrack.lead_agency.name.ilike => q) |
+            objs.all(ActionTrack.agency_priority.name.ilike => q) |
+            objs.all(ActionTrack.progress_notes.note.ilike => q) |
+            objs.all(ActionTrack.global_action.action.ilike => q) |
+            objs.all(ActionTrack.partners.name.ilike => q) |
+            objs.all(ActionTrack.partners.href.ilike => q) |
+            objs.all(ActionTrack.funding_sources.name.ilike => q) |
+            objs.all(ActionTrack.funding_sources.href.ilike => q) |
+            objs.all(ActionTrack.primary_climate_interactions.name.ilike => q)
+        end
+        obj_count_before_pagination = objs.count
+
+        #  Now add pagination
+        objs = objs.page(params["page"], :per_page => params["per_page"]).all(:order => order)
+
+        {data: objs.map {|o| action_track_obj(o) },
+         total: obj_count_before_pagination}
+    end
+
     # GET_LIST
     endpoint description: "Get List of Action Track records",
       responses: standard_errors( 200 => "ActionTrackIndexResponse"),
@@ -148,51 +197,24 @@ module Controllers
 
     get "/action-tracks/?" do
       objs = ActionTrack.all
+      # If this is an ID query
+      if params['query'].to_i.to_s == params['query'].to_s
+        objs = objs.all(:id => params['query'].to_i)
 
-      JSON.parse(params["filter"] || "{}").each do |field, value|
-        if field == "shmcap_goal_ids"
-          objs = objs.all(ActionTrack.shmcap_goals.id => value)
-        elsif field == 'action_type_ids'
-          objs = objs.all(ActionTrack.action_types.id => value)
+        if objs.length != 1
+          # Do a normal query
+          objs = query(params)
         else
-          objs = objs.all(field => value)
+          # We found 1 -- keep it.
         end
+      else
+        # Do a normal query
+        objs = query(params)
       end
+      require 'pry'
+      binding.pry
 
-      order = (params["sort_by_field"] || self.class.EDITABLE_FIELDS[0]).to_sym
-      # Can only order on a few fields
-      if order == :title
-        order = [order.send(params["sort_by_order"].downcase.to_sym)]
-      elsif order == :description
-        order = [order.send(params["sort_by_order"].downcase.to_sym)]
-      end
-
-      objs = objs.page(params["page"], :per_page => params["per_page"]).all(:order => order)
-
-      if params["query"]
-        q = "%" + params['query'] + "%"
-
-        objs =
-          objs.all(:title.ilike => q) |
-          objs.all(:description.ilike => q) |
-          objs.all(ActionTrack.action_types.type.ilike => q) |
-          objs.all(ActionTrack.action_status.status.ilike => q) |
-          objs.all(ActionTrack.completion_timeframe.timeframe.ilike => q) |
-          objs.all(ActionTrack.exec_office.name.ilike => q) |
-          objs.all(ActionTrack.lead_agency.name.ilike => q) |
-          objs.all(ActionTrack.agency_priority.name.ilike => q) |
-          objs.all(ActionTrack.progress_notes.note.ilike => q) |
-          objs.all(ActionTrack.global_action.action.ilike => q) |
-          objs.all(ActionTrack.partners.name.ilike => q) |
-          objs.all(ActionTrack.partners.href.ilike => q) |
-          objs.all(ActionTrack.funding_sources.name.ilike => q) |
-          objs.all(ActionTrack.funding_sources.href.ilike => q) |
-          objs.all(ActionTrack.primary_climate_interactions.name.ilike => q)
-      end
-
-      json(data: objs.map {|o| action_track_obj(o) },
-           total: objs.count
-          )
+      json(objs)
     end
 
     # GET_MANY

@@ -2,7 +2,10 @@ require 'dm-postgis'
 
 class ActionTrack
   include DataMapper::Resource
+  include DataMapper::Audited
+  is_audited
   property :id, Serial, :key => true
+  property :public, Boolean, :default => false
 
   # Action title: unique name
   property :title, String, :unique => true, :length => 255

@@ -7,6 +7,7 @@ require 'dm-serializer'
 require 'dm-pager'
 
 require 'lib/config'
+require 'lib/dm-audited'
 require 'app/models/user'
 
 require 'app/models/agency_priority'

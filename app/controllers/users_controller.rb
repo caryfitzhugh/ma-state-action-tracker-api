@@ -18,8 +18,20 @@ module Controllers
       }
     }
 
+    # GET_MANY
+    endpoint description: "Get many users",
+      responses: standard_errors( 200 => "UsersIndex"),
+      parameters: {
+        ids: ["ID of User", :path, false, [Integer]]
+      },
+      tags: ["User"]
+    get "/users/get-many/(:ids)?" do
+      ids = [(params[:ids] || "").split(',')].flatten.compact.map(&:to_i)
+      json({:data => ids.map {|id| User.get(id)}.compact})
+    end
+
     endpoint description: "Get a user",
-              responses: standard_errors( 200 => ["User"]),
+              responses: standard_errors( 200 => "User"),
               parameters: {
                 "id": ["ID of the User to retrieve", :path, true, Integer],
               },
