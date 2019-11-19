@@ -134,9 +134,9 @@ module Controllers
 
       private_search = (params["show_private"] && current_user)
       if private_search
-          # Nothing. Get all!
+          # Nothing. Get all! (pub / priv)
       else
-          objs = objs.all(:public => false)
+          objs = objs.all(:public => true)
       end
 
         JSON.parse(params["filter"] || "{}").each do |field, value|
