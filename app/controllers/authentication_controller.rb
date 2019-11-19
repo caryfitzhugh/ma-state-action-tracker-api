@@ -9,9 +9,9 @@ module Controllers
       parameters: {}
     get "/logged_in" do
       if current_user
-        json({logged_in: true})
+        json({logged_in: true, roles: Hash[current_user.roles.collect { |item| [item, true] }]})
       else
-        json({logged_in: false})
+        json({logged_in: false, roles: {}})
       end
     end
 
@@ -30,7 +30,7 @@ module Controllers
       if user && user.password == params[:password]
         session.clear
         session[:user_id] = user.id
-        json({msg: "OK"})
+        json({logged_in: true, roles: Hash[current_user.roles.collect { |item| [item, true] }]})
       else
         halt 403
       end
@@ -41,7 +41,7 @@ module Controllers
       parameters: {}
     post "/sign_out" do
       session.clear
-      json({msg: "OK"})
+      json({msg: "OK", roles: {}})
     end
   end
 end

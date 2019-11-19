@@ -131,6 +131,8 @@ module Controllers
             objs = objs.all(ActionTrack.shmcap_goals.id => value)
           elsif field == 'action_type_ids'
             objs = objs.all(ActionTrack.action_types.id => value)
+          elsif field == 'funding_source_ids'
+            objs = objs.all(ActionTrack.funding_sources.id => value)
           else
             objs = objs.all(field => value)
           end
