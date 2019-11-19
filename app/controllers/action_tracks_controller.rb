@@ -12,7 +12,8 @@ module Controllers
        "exec_office_id",
        "lead_agency_id",
        "agency_priority_id",
-       "global_action_id"
+       "global_action_id",
+       "public"
       ]
     end
 
@@ -68,6 +69,7 @@ module Controllers
       properties: {
         :id => {type: Integer},
         :title => {type: String},
+        :public => {type: 'boolean', example: "false"},
         :description => {type: String},
         :start_on => {type: String, example: "2017-01-31"},
         :end_on => {type: String, example: "2017-01-31"},
@@ -92,6 +94,7 @@ module Controllers
         :start_on => {type: String, example: "2017-01-31"},
         :end_on => {type: String, example: "2017-01-31"},
 
+        :public => {type: 'boolean', example: "false"},
         :action_status_id => {type: Integer, description: "Action Status ID"},
         :exec_office_id => {type: Integer, description: "Exec Office ID"},
         :lead_agency_id => {type: Integer, description: "Lead Agency ID"},
@@ -125,7 +128,17 @@ module Controllers
     }
 
     def query(params)
+      # public options?
+      # If the current_user and the params are "show_private"
       objs = ActionTrack.all
+
+      private_search = (params["show_private"] && current_user)
+      if private_search
+          # Nothing. Get all!
+      else
+          objs = objs.all(:public => false)
+      end
+
         JSON.parse(params["filter"] || "{}").each do |field, value|
           if field == "shmcap_goal_ids"
             objs = objs.all(ActionTrack.shmcap_goals.id => value)
@@ -133,6 +146,12 @@ module Controllers
             objs = objs.all(ActionTrack.action_types.id => value)
           elsif field == 'funding_source_ids'
             objs = objs.all(ActionTrack.funding_sources.id => value)
+          elsif field == 'public'
+            if private_search
+              objs = objs.all(field => value)
+            else
+              # Ignore this!
+            end
           else
             objs = objs.all(field => value)
           end
@@ -179,6 +198,7 @@ module Controllers
     endpoint description: "Get List of Action Track records",
       responses: standard_errors( 200 => "ActionTrackIndexResponse"),
       parameters: {
+        show_private: ["Show private, even private", :query, false, "boolean"],
         page: ["Page Start", :query, false, Integer, {
                 minimum: 1,
                 default: 1,
@@ -225,7 +245,20 @@ module Controllers
       tags: ["ActionTrack"]
     get "/action-tracks/get-many/?:ids" do
       ids = [params[:ids].split(',')].flatten.compact.map(&:to_i)
-      json({:data => (ids).map {|id| action_track_obj(ActionTrack.get(id))}})
+      private_search = current_user
+      data = (ids).map do |id|
+          at = ActionTrack.get(id)
+          if !at.public
+            if private_search
+              action_track_obj(at)
+            else
+              nil
+            end
+          else
+              action_track_obj(at)
+          end
+        end.compact
+      json({:data => data})
     end
 
 
@@ -237,7 +270,21 @@ module Controllers
       },
       tags: ["ActionTrack"]
     get "/action-tracks/:id" do
-      json({:data => [action_track_obj(ActionTrack.get(params[:id]))]})
+      ids = [params[:id]]
+      private_search = current_user
+      data = (ids).map do |id|
+          at = ActionTrack.get(id)
+          if !at.public
+            if private_search
+              action_track_obj(at)
+            else
+              nil
+            end
+          else
+            action_track_obj(at)
+          end
+        end.compact
+      json({:data => data })
     end
 
     # CREATE
@@ -279,7 +326,7 @@ module Controllers
       data['id'] = params['id']
 
       fields = params['parsed_body']['data']
-      obj_fields = fields.slice(*self.class.EDITABLE_FIELDS).select
+      obj_fields = fields.slice(*self.class.EDITABLE_FIELDS).select.to_h
 
       ActionTrack.transaction do |t|
         begin
@@ -305,7 +352,7 @@ module Controllers
       tags: ["ActionTrack"]
     put "/action-tracks/?", require_role: :curator do
       res = params['parsed_body']['data'].map do |fields|
-        obj_fields = fields.slice(*self.class.EDITABLE_FIELDS).select
+        obj_fields = fields.slice(*self.class.EDITABLE_FIELDS).select.to_h
 
         ActionTrack.transaction do |t|
           begin
