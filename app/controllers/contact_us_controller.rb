@@ -45,11 +45,17 @@ module Controllers
         (CONFIG.contact_email_recipients || "").split(",").each do |to_email|
           send_contact_email(to_email, "MA State Action Tracker Contact Submission") do
             """
-            First: #{data['first_name']}
-            Last: #{data['last_name']}
-            Email: #{data['email']}
+            <bold>First:</bold> #{data['first_name']}
+            <br/>
+            <bold>Last:</bold> #{data['last_name']}
+            <br/>
+            <bold>Email:</bold> #{data['email']}
+            <br/>
             Message:
+            <br/>
+            <pre>
               #{data['message']}
+            </pre>
             """
           end
         end
