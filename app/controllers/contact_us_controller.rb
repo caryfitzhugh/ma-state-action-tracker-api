@@ -1,6 +1,7 @@
 require 'app/controllers/base'
 require 'app/models'
 require 'uri'
+require 'lib/email'
 
 module Controllers
   class ContactUsController < Controllers::Base
@@ -41,11 +42,14 @@ module Controllers
         json({message: "Invalid Captcha. " + json_res['error-codes'].join(",")})
       else
         data = params['parsed_body']['data']
-        send_contact_email(CONFIG.contact_email_recipients.split(","), "MA State Action Tracker Contact Submission") do
-          "First: #{data['first_name'}}\n" +
-          "Last: #{data['last_name'}}\n" +
-          "Email: #{data['email'}}\n" +
-          "Message:\n#{data['message']}"
+        send_contact_email((CONFIG.contact_email_recipients || "").split(","), "MA State Action Tracker Contact Submission") do
+          """
+          First: #{data['first_name']}
+          Last: #{data['last_name']}
+          Email: #{data['email']}
+          Message:
+            #{data['message']}
+          """
         end
 
         json({message: "Sent"})
