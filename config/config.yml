@@ -1,4 +1,6 @@
 production:
+  captcha_key: <%= ENV['CAPTCHA_KEY'] %>
+  contact_email_recipients: <%= ENV['CONTACT_EMAIL_RECIPIENTS'] %>
   postgres:
      adapter: postgres
      database: <%= ENV['RDS_DB_NAME'] %>
@@ -8,6 +10,8 @@ production:
      port: <%= ENV['RDS_PORT'] %>
 
 development:
+  captcha_key: <%= ENV['CAPTCHA_KEY'] %>
+  contact_email_recipients: <%= ENV['CONTACT_EMAIL_RECIPIENTS'] %>
   postgres:
     adapter: <%= ENV['POSTGRES_DB_ADAPTER'] || 'postgres' %>
     database: <%= ENV['POSTGRES_DB_DATABASE'] || 'mastateat' %>
@@ -18,6 +22,8 @@ development:
   pretend_admin: true
 
 test:
+  captcha_key: <%= ENV['CAPTCHA_KEY'] %>
+  contact_email_recipients: <%= ENV['CONTACT_EMAIL_RECIPIENTS'] %>
   postgres:
     adapter: <%= ENV['POSTGRES_DB_ADAPTER'] || 'postgres' %>
     database: <%= ENV['POSTGRES_DB_DATABASE'] || 'mastateat' %>
