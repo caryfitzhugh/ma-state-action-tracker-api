@@ -8,7 +8,7 @@ class ActionTrack
   property :public, Boolean, :default => false
 
   # Action title: unique name
-  property :title, String, :unique => true, :length => 255
+  property :title, String, :unique => true, :length => 512
   # Action description: unique description
   property :description, Text
 
@@ -39,5 +39,4 @@ class ActionTrack
   # Primary Climate Change Interactions - drop down
   has n, :primary_climate_interactions, PrimaryClimateInteraction, :through => :action_track_primary_climate_interaction
 
-  validates_primitive_type_of :start_on, :end_on
 end

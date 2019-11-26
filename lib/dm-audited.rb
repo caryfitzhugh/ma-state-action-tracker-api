@@ -65,7 +65,7 @@ module DataMapper
         end
 
         before :destroy do
-          @audited_attributes = original_values.clone
+          @audited_attributes = self.original_attributes.clone
         end
 
         after :create do
