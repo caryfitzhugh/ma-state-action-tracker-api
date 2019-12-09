@@ -157,14 +157,6 @@ module Controllers
           end
         end
 
-        order = (params["sort_by_field"] || self.class.EDITABLE_FIELDS[0]).to_sym
-        # Can only order on a few fields
-        if order == :title
-          order = [order.send(params["sort_by_order"].downcase.to_sym)]
-        elsif order == :description
-          order = [order.send(params["sort_by_order"].downcase.to_sym)]
-        end
-
         if params["query"]
           q = "%" + params['query'] + "%"
 
@@ -188,7 +180,16 @@ module Controllers
 
         objs
     end
-    def paginate_and_prep(objs)
+
+    def paginate_and_prep(params, objs)
+        order = (params["sort_by_field"] || self.class.EDITABLE_FIELDS[0]).to_sym
+        # Can only order on a few fields
+        if order == :title
+          order = [order.send(params["sort_by_order"].downcase.to_sym)]
+        elsif order == :description
+          order = [order.send(params["sort_by_order"].downcase.to_sym)]
+        end
+
         obj_count_before_pagination = objs.count
 
         #  Now add pagination
@@ -229,13 +230,13 @@ module Controllers
 
         if objs.length != 1
           # Do a normal query
-          objs = paginate_and_prep(query(params))
+          objs = paginate_and_prep(params, query(params))
         else
           # We found 1 -- keep it.
         end
       else
         # Do a normal query
-        objs = paginate_and_prep(query(params))
+        objs = paginate_and_prep(params, query(params))
       end
       json(objs)
     end
