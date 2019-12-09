@@ -185,6 +185,10 @@ module Controllers
             objs.all(ActionTrack.funding_sources.href.ilike => q) |
             objs.all(ActionTrack.primary_climate_interactions.name.ilike => q)
         end
+
+        objs
+    end
+    def paginate_and_prep(objs)
         obj_count_before_pagination = objs.count
 
         #  Now add pagination
@@ -225,15 +229,102 @@ module Controllers
 
         if objs.length != 1
           # Do a normal query
-          objs = query(params)
+          objs = paginate_and_prep(query(params))
         else
           # We found 1 -- keep it.
         end
       else
         # Do a normal query
-        objs = query(params)
+        objs = paginate_and_prep(query(params))
       end
       json(objs)
+    end
+
+    get "/action-tracks/as-csv", :no_swagger => true do
+      content_type 'application/csv'
+      attachment "action_tracks.csv"
+
+      params["page"] = 1
+      params["per_page"] = ActionTrack.count
+
+      objs = query(params)
+      result = CSV.generate do |csv|
+        csv << ["Title",
+                "Description",
+                "Completion Timeframe",
+                "Action Status",
+                "Exec Office",
+                "Lead Agency",
+                "Agency Priority Score",
+                "Global Action",
+                "Progress Notes",
+                "Action Types",
+                "Partners",
+                "Possible Funding Sources",
+                "SHMCAP Goals",
+                "Primary Climate Interactions"]
+
+        objs.each do |obj|
+          row = [
+            obj.title,
+            obj.description
+          ]
+
+          begin
+              row << (obj.completion_timeframe.timeframe)
+          rescue
+              row <<  ""
+          end
+
+          begin
+            row <<  obj.action_status.status
+          rescue
+              row <<  ""
+          end
+
+          begin
+            row << ([obj.exec_office.name, obj.exec_office.href].join "\n")
+          rescue
+            row << ""
+          end
+
+          begin
+            row << ([obj.lead_agency.name, obj.lead_agency.href].join "\n")
+          rescue
+            row << ""
+          end
+
+          begin
+            row << (obj.agency_priority.name)
+          rescue
+            row << ""
+          end
+
+          begin
+            row <<  obj.global_action.action
+          rescue
+            row << ""
+          end
+
+          row <<  obj.progress_notes.map(&:note).join("\n")
+
+          row <<  obj.action_types.map {|at| at.type }.join("\n")
+
+          row <<  obj.partners.map do |partner|
+            [partner.name, partner.href].compact.join(" / ")
+          end.join("\n")
+
+          row << obj.funding_sources.map do |fs|
+              [fs.name, fs.href].compact.join(" / ")
+          end.join("\n")
+
+          row << obj.shmcap_goals.map(&:name).join("\n")
+
+          row << obj.primary_climate_interactions.map(&:name).join("\n")
+
+          csv << row
+        end
+      end
     end
 
     # GET_MANY
