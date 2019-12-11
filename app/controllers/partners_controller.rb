@@ -128,6 +128,12 @@ module Controllers
         self.update_many(Partner, params['parsed_body']['data'])
     end
 
+    def clear_relationships(ids)
+      ActionTrackPartner.all(:partner_id => ids).each do |atp|
+        atp.destroy!
+      end
+    end
+
     # DELETE
     endpoint description: "Delete Partner record",
       responses: standard_errors( 200 => "PartnersResponse"),
@@ -136,7 +142,9 @@ module Controllers
       },
       tags: ["Partner"]
     delete "/partners/:id/?", require_role: :curator do
-      self.delete_many(Partner, [params['id']].compact)
+      ids = [params['id']].compact
+      clear_relationships(ids)
+      self.delete_many(Partner, ids)
     end
 
     # DELETE_MANY
@@ -148,6 +156,7 @@ module Controllers
       tags: ["Partner"]
     delete "/partners/:ids", require_role: :curator do
       ids = [params[:ids].split(',')].flatten.compact.map(&:to_i)
+      clear_relationships(ids)
       self.delete_many(Partner, ids)
     end
 

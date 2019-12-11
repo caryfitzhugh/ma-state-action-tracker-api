@@ -127,6 +127,12 @@ module Controllers
         self.update_many(ShmcapGoal, params['parsed_body']['data'])
     end
 
+    def clear_relationships(ids)
+      ActionTrackShmcapGoal.all(:shmcap_goal_id => ids).each do |atsg|
+        atsg.destroy!
+      end
+    end
+
     # DELETE
     endpoint description: "Delete ShmcapGoal record",
       responses: standard_errors( 200 => "ShmcapGoalsResponse"),
@@ -135,7 +141,9 @@ module Controllers
       },
       tags: ["ShmcapGoal"]
     delete "/shmcap-goals/:id/?", require_role: :curator do
-      self.delete_many(ShmcapGoal, [params['id']].compact)
+      ids = [params['id']].compact
+      clear_relationships(ids)
+      self.delete_many(ShmcapGoal, ids)
     end
 
     # DELETE_MANY
@@ -147,6 +155,7 @@ module Controllers
       tags: ["ShmcapGoal"]
     delete "/shmcap-goals/:ids", require_role: :curator do
       ids = [params[:ids].split(',')].flatten.compact.map(&:to_i)
+      clear_relationships(ids)
       self.delete_many(ShmcapGoal, ids)
     end
   end

@@ -130,6 +130,13 @@ module Controllers
       self.update_many(ExecOffice, params['parsed_body']['data'])
     end
 
+    def clear_relationships(ids)
+      ActionTrack.all(:exec_office_id => ids).each do |at|
+        at.exec_office_id = nil
+        at.save!
+      end
+    end
+
     # DELETE
     endpoint description: "Delete Exec Office record",
       responses: standard_errors( 200 => "ExecOfficesResponse"),
@@ -138,7 +145,9 @@ module Controllers
       },
       tags: ["Exec Office"]
     delete "/exec-offices/:id/?", require_role: :curator do
-      self.delete_many(ExecOffice, [params['id']].compact)
+      ids = [params['id']].compact
+      clear_relationships(ids)
+      self.delete_many(ExecOffice, ids)
     end
 
     # DELETE_MANY
@@ -150,6 +159,7 @@ module Controllers
       tags: ["Exec Office"]
     delete "/exec-offices/:ids", require_role: :curator do
       ids = [params[:ids].split(',')].flatten.compact.map(&:to_i)
+      clear_relationships(ids)
       self.delete_many(ExecOffice, ids)
     end
   end

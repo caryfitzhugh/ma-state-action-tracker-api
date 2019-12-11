@@ -126,6 +126,12 @@ module Controllers
         self.update_many(FundingSource, params['parsed_body']['data'])
     end
 
+    def clear_relationships(ids)
+      ActionTrackFundingSource.all(:funding_source_id => ids).each do |atfs|
+        atfs.destroy!
+      end
+    end
+
     # DELETE
     endpoint description: "Delete Funding Source record",
       responses: standard_errors( 200 => "FundingSourcesResponse"),
@@ -134,7 +140,9 @@ module Controllers
       },
       tags: ["Funding Source"]
     delete "/funding-sources/:id/?", require_role: :curator do
-      self.delete_many(FundingSource, [params['id']].compact)
+      ids = [params['id']].compact
+      clear_relationships(ids)
+      self.delete_many(FundingSource, ids)
     end
 
     # DELETE_MANY
@@ -146,6 +154,7 @@ module Controllers
       tags: ["Funding Source"]
     delete "/funding-sources/:ids", require_role: :curator do
       ids = [params[:ids].split(',')].flatten.compact.map(&:to_i)
+      clear_relationships(ids)
       self.delete_many(FundingSource, ids)
     end
 

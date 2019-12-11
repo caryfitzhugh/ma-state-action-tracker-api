@@ -124,6 +124,13 @@ module Controllers
       self.update_many(ActionStatus, params['parsed_body']['data'])
     end
 
+    def clear_relationships(ids)
+       ActionTrack.all(:action_status_id => ids).each do |at|
+        at.action_status_id = nil
+        at.save!
+      end
+    end
+
     # DELETE_ONE
     endpoint description: "Delete One Action Status records",
       responses: standard_errors( 200 => "ActionStatusesResponse"),
@@ -132,7 +139,9 @@ module Controllers
       },
       tags: ["Action Status"]
     delete "/action-types/:id", require_role: :curator do
-      self.delete_many(ActionStatus, [params['id']].compact)
+      ids = [params['id']].compact
+      clear_relationships(ids)
+      self.delete_many(ActionStatus, ids)
     end
     # DELETE_MANY
     endpoint description: "Delete MANY Action Status records",
@@ -143,6 +152,7 @@ module Controllers
       tags: ["Action Status"]
     delete "/action-statuses/:ids", require_role: :curator do
       ids = [params[:ids].split(',')].flatten.compact.map(&:to_i)
+      clear_relationships(ids)
       self.delete_many(ActionStatus, ids)
     end
   end

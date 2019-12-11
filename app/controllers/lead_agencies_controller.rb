@@ -128,6 +128,13 @@ module Controllers
         self.update_many(LeadAgency, params['parsed_body']['data'])
     end
 
+    def clear_relationships(ids)
+      ActionTrack.all(:lead_agency_id => ids).each do |at|
+        at.lead_agency_id = nil
+        at.save!
+      end
+    end
+
     # DELETE
     endpoint description: "Delete Lead Agency record",
       responses: standard_errors( 200 => "LeadAgenciesResponse"),
@@ -136,7 +143,9 @@ module Controllers
       },
       tags: ["Lead Agency"]
     delete "/lead-agencies/:id/?", require_role: :curator do
-      self.delete_many(LeadAgency, [params['id']].compact)
+      ids = [params['id']].compact
+      clear_relationships(ids)
+      self.delete_many(LeadAgency, ids)
     end
 
     # DELETE_MANY
@@ -148,6 +157,7 @@ module Controllers
       tags: ["Lead Agency"]
     delete "/lead-agencies/:ids", require_role: :curator do
       ids = [params[:ids].split(',')].flatten.compact.map(&:to_i)
+      clear_relationships(ids)
       self.delete_many(LeadAgency, ids)
     end
 

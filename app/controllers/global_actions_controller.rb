@@ -126,6 +126,13 @@ module Controllers
       self.update_many(GlobalAction, params['parsed_body']['data'])
     end
 
+    def clear_relationships(ids)
+      ActionTrack.all(:global_action_id => ids).each do |at|
+        at.global_action_id = nil
+        at.save!
+      end
+    end
+
     # DELETE
     endpoint description: "Delete Global Action record",
       responses: standard_errors( 200 => "GlobalActionsResponse"),
@@ -134,7 +141,9 @@ module Controllers
       },
       tags: ["Global Action"]
     delete "/global-actions/:id/?", require_role: :curator do
-      self.delete_many(GlobalAction, [params['id']].compact)
+      ids = [params['id']].compact
+      clear_relationships(ids)
+      self.delete_many(GlobalAction, ids)
     end
 
     # DELETE_MANY
@@ -146,6 +155,7 @@ module Controllers
       tags: ["Global Action"]
     delete "/global-actions/:ids", require_role: :curator do
       ids = [params[:ids].split(',')].flatten.compact.map(&:to_i)
+      clear_relationships(ids)
       self.delete_many(GlobalAction, ids)
     end
   end

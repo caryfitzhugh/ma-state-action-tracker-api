@@ -125,6 +125,13 @@ module Controllers
       self.update_many(CompletionTimeframe, params['parsed_body']['data'])
     end
 
+    def clear_relationships(ids)
+      ActionTrack.all(:completion_timeframe_id => ids).each do |at|
+        at.completion_timeframe_id = nil
+        at.save!
+      end
+    end
+
     # DELETE_ONE
     endpoint description: "Delete MANY Completion Timeframe records",
       responses: standard_errors( 200 => "CompletionTimeframesResponse"),
@@ -133,7 +140,9 @@ module Controllers
       },
       tags: ["Completion Timeframe"]
     delete "/completion-timeframes/:id", require_role: :curator do
-      self.delete_many(CompletionTimeframe, [params['id']].compact)
+      ids = [params['id']].compact
+      clear_relationships(ids)
+      self.delete_many(CompletionTimeframe, ids)
     end
     # DELETE_MANY
     endpoint description: "Delete MANY Completion Timeframe records",
@@ -144,6 +153,7 @@ module Controllers
       tags: ["Completion Timeframe"]
     delete "/completion-timeframes/:ids", require_role: :curator do
       ids = [params[:ids].split(',')].flatten.compact.map(&:to_i)
+      clear_relationships(ids)
       self.delete_many(CompletionTimeframe, params['ids'])
     end
   end

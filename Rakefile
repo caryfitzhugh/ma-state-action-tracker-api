@@ -1,18 +1,15 @@
-
+require './app.rb'
 require 'inquirer'
 
 namespace :db do
   task :migrate do
-    require './app.rb'
     DataMapper.auto_upgrade!
   end
   task :hard_migrate do
-    require './app.rb'
     puts CONFIG
     DataMapper.auto_migrate!
   end
   task :load, [:file] do |t, args|
-    require './app.rb'
     require 'csv'
 
     Thread.current[:user_id] = -1

@@ -128,6 +128,12 @@ module Controllers
         self.update_many(PrimaryClimateInteraction, params['parsed_body']['data'])
     end
 
+    def clear_relationships(ids)
+      ActionTrackPrimaryClimateInteraction.all(:primary_climate_interaction_id => ids).each do |atpci|
+        atpci.destroy!
+      end
+    end
+
     # DELETE
     endpoint description: "Delete PrimaryClimateInteraction record",
       responses: standard_errors( 200 => "PrimaryClimateInteractionsResponse"),
@@ -136,7 +142,9 @@ module Controllers
       },
       tags: ["PrimaryClimateInteraction"]
     delete "/primary-climate-interactions/:id/?", require_role: :curator do
-      self.delete_many(PrimaryClimateInteraction, [params['id']].compact)
+      ids = [params['id']].compact
+      clear_relationships(ids)
+      self.delete_many(PrimaryClimateInteraction, ids)
     end
 
     # DELETE_MANY
@@ -148,6 +156,7 @@ module Controllers
       tags: ["PrimaryClimateInteraction"]
     delete "/primary-climate-interactions/:ids", require_role: :curator do
       ids = [params[:ids].split(',')].flatten.compact.map(&:to_i)
+      clear_relationships(ids)
       self.delete_many(PrimaryClimateInteraction, ids)
     end
   end
