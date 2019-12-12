@@ -14,7 +14,10 @@ class User
     self.roles.any? {|r| r == "admin"}
   end
   def is_curator?
-    is_admin? || self.roles.any? {|r| r == "curator"}
+    is_admin? || is_only_curaton?
+  end
+  def is_only_curator?
+    self.roles.any? {|r| r == "curator"}
   end
 
   def to_resource

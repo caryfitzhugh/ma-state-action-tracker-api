@@ -341,7 +341,7 @@ module Controllers
       private_search = current_user
       data = (ids).map do |id|
           at = ActionTrack.get(id)
-          if !at.public
+          if !at.public and current_user.is_only_curator()
             if private_search
               action_track_obj(at)
             else
@@ -367,7 +367,7 @@ module Controllers
       private_search = current_user
       data = (ids).map do |id|
           at = ActionTrack.get(id)
-          if !at.public
+          if !at.public and current_user.is_only_curator()
             if private_search
               action_track_obj(at)
             else
@@ -398,7 +398,7 @@ module Controllers
           action_track_update(ap, fields)
           ap.save!
 
-          if not ap.public
+          if !at.public and current_user.is_only_curator()
             send_changed_email(ap, current_user, "Created")
           end
 
