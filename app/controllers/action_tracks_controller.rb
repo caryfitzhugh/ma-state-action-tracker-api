@@ -397,15 +397,15 @@ module Controllers
       # Send "Created"
       ActionTrack.transaction do |t|
         begin
-          ap = ActionTrack.create!(obj_fields)
-          action_track_update(ap, fields)
-          ap.save!
+          at = ActionTrack.create!(obj_fields)
+          action_track_update(at, fields)
+          at.save!
 
           if !at.public and current_user.is_only_curator()
-            send_changed_email(ap, current_user, "Created")
+            send_changed_email(at, current_user, "Created")
           end
 
-          json({data: action_track_obj(ap)})
+          json({data: action_track_obj(at)})
         rescue
           t.rollback
           raise $!
@@ -430,16 +430,16 @@ module Controllers
 
       ActionTrack.transaction do |t|
         begin
-          ap = ActionTrack.get(params[:id])
-          ap.update(obj_fields)
-          action_track_update(ap, fields)
-          ap.save!
+          at = ActionTrack.get(params[:id])
+          at.update(obj_fields)
+          action_track_update(at, fields)
+          at.save!
 
-          if not ap.public
-            send_changed_email(ap, current_user, "Updated")
+          if not at.public
+            send_changed_email(at, current_user, "Updated")
           end
 
-          json({data: [action_track_obj(ap)]})
+          json({data: [action_track_obj(at)]})
         rescue
           t.rollback
           raise $!
