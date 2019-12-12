@@ -390,12 +390,16 @@ module Controllers
     post "/action-tracks/?", require_role: :curator do
       fields = params['parsed_body']['data']
       obj_fields = fields.slice(*self.class.EDITABLE_FIELDS).select
-
+      # Send "Created"
       ActionTrack.transaction do |t|
         begin
           ap = ActionTrack.create!(obj_fields)
           action_track_update(ap, fields)
           ap.save!
+
+          if not ap.public
+            send_changed_email(ap, current_user, "Created")
+          end
 
           json({data: action_track_obj(ap)})
         rescue
@@ -427,6 +431,10 @@ module Controllers
           action_track_update(ap, fields)
           ap.save!
 
+          if not ap.public
+            send_changed_email(ap, current_user, "Updated")
+          end
+
           json({data: [action_track_obj(ap)]})
         rescue
           t.rollback
@@ -452,6 +460,10 @@ module Controllers
             ap.update(obj_fields)
             action_track_update(ap, fields)
             ap.save!
+
+            if not ap.public
+              send_changed_email(ap, current_user, "Updated")
+            end
 
             action_track_obj(ap)
           rescue

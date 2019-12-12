@@ -1,6 +1,7 @@
 production:
   captcha_key: <%= ENV['CAPTCHA_KEY'] %>
   contact_email_recipients: <%= ENV['CONTACT_EMAIL_RECIPIENTS'] %>
+  private_action_track_changes_recipients: <%= ENV['ACTION_TRACK_CHANGES_EMAIL_RECIPIENTS'] %>
   postgres:
      adapter: postgres
      database: <%= ENV['RDS_DB_NAME'] %>
@@ -12,6 +13,7 @@ production:
 development:
   captcha_key: <%= ENV['CAPTCHA_KEY'] %>
   contact_email_recipients: <%= ENV['CONTACT_EMAIL_RECIPIENTS'] %>
+  private_action_track_changes_recipients: <%= ENV['ACTION_TRACK_CHANGES_EMAIL_RECIPIENTS'] %>
   postgres:
     adapter: <%= ENV['POSTGRES_DB_ADAPTER'] || 'postgres' %>
     database: <%= ENV['POSTGRES_DB_DATABASE'] || 'mastateat' %>
@@ -24,6 +26,7 @@ development:
 test:
   captcha_key: <%= ENV['CAPTCHA_KEY'] %>
   contact_email_recipients: <%= ENV['CONTACT_EMAIL_RECIPIENTS'] %>
+  private_action_track_changes_recipients: <%= ENV['ACTION_TRACK_CHANGES_EMAIL_RECIPIENTS'] %>
   postgres:
     adapter: <%= ENV['POSTGRES_DB_ADAPTER'] || 'postgres' %>
     database: <%= ENV['POSTGRES_DB_DATABASE'] || 'mastateat' %>
