@@ -21,6 +21,7 @@ def send_changed_email(action_track, user, action)
                 recipient: to_email,
                 sender: sender,
                 html: body)
+  end
 end
 
 def send_contact_email(to, subject)
