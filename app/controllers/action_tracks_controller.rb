@@ -38,6 +38,9 @@ module Controllers
       ap.shmcap_goals =  []
       ap.primary_climate_interactions =  []
       ap.progress_notes = []
+      ProgressNote.all(:action_track_id => ap.id).each do |pn|
+        pn.destroy!
+      end
       ap.action_types = []
       ap.save!
       ap.destroy!
@@ -492,7 +495,7 @@ module Controllers
         at
       end
 
-      json({:data => ats})
+      json({:data => []})
     end
 
     # DELETE_MANY
@@ -510,7 +513,7 @@ module Controllers
         end
         at
       end
-      json({:data => ats})
+      json({:data => []})
     end
   end
 end
