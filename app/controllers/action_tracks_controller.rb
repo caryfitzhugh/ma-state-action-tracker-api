@@ -233,6 +233,7 @@ module Controllers
           objs = paginate_and_prep(params, query(params))
         else
           # We found 1 -- keep it.
+          objs = {data: objs, total: 1}
         end
       else
         # Do a normal query
