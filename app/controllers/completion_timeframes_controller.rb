@@ -52,7 +52,7 @@ module Controllers
         per_page: ["Records per page", :query, false, Integer, {
                 minimum: 1,
                 default: 20,
-                maximum: 50,
+                maximum: 5000,
                 example: 10
               }],
         sort_by_field: ["Field to sort on", :query, false, String],
