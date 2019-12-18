@@ -81,10 +81,12 @@ module Controllers
       elsif params["sort_by_order"] == "ASC"
           order = [order.asc]
       end
+
+      objs_total = objs.count
+
       objs = objs.page(params["page"], :per_page => params["per_page"]).all(:order => order)
       json(data: objs,
-           total: objs.count
-          )
+           total: objs_total)
     end
 
     private
