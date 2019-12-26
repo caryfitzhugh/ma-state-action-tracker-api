@@ -149,6 +149,8 @@ module Controllers
             objs = objs.all(ActionTrack.action_types.id => value)
           elsif field == 'funding_source_ids'
             objs = objs.all(ActionTrack.funding_sources.id => value)
+          elsif field == 'primary_climate_interaction_ids'
+            objs = objs.all(ActionTrack.primary_climate_interactions.id => value)
           elsif field == 'public'
             if private_search
               objs = objs.all(field => value)
